@@ -22,9 +22,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     redirect: (BuildContext context, GoRouterState state) {
       final loggedIn = auth.isLoggedIn;
       final loggedOTP = auth.isLoggedOTP;
-      final loggingIn =
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+      final authRoutes = [
+        '/login',
+        '/register',
+        '/forgot-password',
+        '/reset-password',
+      ];
+
+      final loggingIn = authRoutes.contains(state.matchedLocation);
 
       // jika belum login tapi bukan login/register, redirect ke login
       if (!loggedIn && !loggingIn) return '/login';

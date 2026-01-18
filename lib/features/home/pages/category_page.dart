@@ -77,38 +77,41 @@ class _CategoryPageState extends State<CategoryPage> {
             minHeight: MediaQuery.of(context).size.height,
           ),
           child: IntrinsicHeight(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: FutureBuilder<List<Article>>(
-                future: latestArticles,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No articles found'));
-                  }
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: FutureBuilder<List<Article>>(
+                  future: latestArticles,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No articles found'));
+                    }
 
-                  final articles = snapshot.data!;
-                  return Column(
-                    children: articles.map((article) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: CardArticleLarge(
-                          title: article.title,
-                          description: article.description,
-                          subtitle:
-                              widget.category[0].toUpperCase() +
-                              widget.category.substring(1),
-                          source: article.sourceName,
-                          imageURL: article.imageUrl,
-                          date: article.publishedAt,
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
+                    final articles = snapshot.data!;
+                    return Column(
+                      children: articles.map((article) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: CardArticleLarge(
+                            title: article.title,
+                            description: article.description,
+                            subtitle:
+                                widget.category[0].toUpperCase() +
+                                widget.category.substring(1),
+                            source: article.sourceName,
+                            imageURL: article.imageUrl,
+                            date: article.publishedAt,
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -121,35 +124,49 @@ class _CategoryPageState extends State<CategoryPage> {
         surfaceTintColor: whiteColor,
         color: whiteColor,
         padding: EdgeInsets.all(0),
-        child: Container(
-          height: 76,
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(width: 2, color: greenColor)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly, // <--- penting
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              buildMenuItem(Icons.home_outlined, 'Home', '/home', context),
-              buildMenuItem(
-                Icons.explore_outlined,
-                'Explore',
-                '/explore',
-                context,
+        child: Center(
+          child: Container(
+            height: 76,
+            constraints: BoxConstraints(maxWidth: 379),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(width: 2, color: greenColor)),
+            ),
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceEvenly, // <--- penting
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buildMenuItem(
+                      Icons.home_outlined,
+                      'Home',
+                      '/home',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.explore_outlined,
+                      'Explore',
+                      '/explore',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.bookmark_outline,
+                      'Bookmark',
+                      '/bookmark',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.account_circle_outlined,
+                      'Profile',
+                      '/profile',
+                      context,
+                    ),
+                  ],
+                ),
               ),
-              buildMenuItem(
-                Icons.bookmark_outline,
-                'Bookmark',
-                '/bookmark',
-                context,
-              ),
-              buildMenuItem(
-                Icons.account_circle_outlined,
-                'Profile',
-                '/profile',
-                context,
-              ),
-            ],
+            ),
           ),
         ),
       ),

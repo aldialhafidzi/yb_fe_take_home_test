@@ -42,32 +42,36 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: IntrinsicHeight(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Form(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: Text(
-                            'Forgot Password ?',
-                            style: mediumBoldTextStyle,
-                          ),
+                  child: Center(
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: 379),
+                      child: Form(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              child: Text(
+                                'Forgot Password ?',
+                                style: mediumBoldTextStyle,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Don’t worry! it happens. Please enter the address associated with your account.',
+                              style: mediumTextStyle,
+                            ),
+                            SizedBox(height: 16),
+                            TextFieldInput(
+                              key: _emailKey,
+                              labelText: 'Email ID / Mobile number',
+                              controller: _emailController,
+                              validator: (value) => Validator.email(value),
+                              requiredInput: true,
+                              clearableText: true,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 5),
-                        Text(
-                          'Don’t worry! it happens. Please enter the address associated with your account.',
-                          style: mediumTextStyle,
-                        ),
-                        SizedBox(height: 16),
-                        TextFieldInput(
-                          key: _emailKey,
-                          labelText: 'Email ID / Mobile number',
-                          controller: _emailController,
-                          validator: (value) => Validator.email(value),
-                          requiredInput: true,
-                          clearableText: true,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -78,24 +82,32 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-              decoration: BoxDecoration(
-                color: whiteColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x0D000000),
-                    offset: Offset(0, -2),
-                    blurRadius: 4,
-                    spreadRadius: 0,
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: whiteColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0D000000),
+                      offset: Offset(0, -2),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 379),
+                    child: AppButton(
+                      onPressed: () {
+                        context.go('/login');
+                      },
+                      label: 'Submit',
+                    ),
                   ),
-                ],
-              ),
-              child: AppButton(
-                onPressed: () {
-                  context.go('/login');
-                },
-                label: 'Submit',
+                ),
               ),
             ),
           ),

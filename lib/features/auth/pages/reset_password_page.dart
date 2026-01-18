@@ -66,75 +66,79 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
               child: IntrinsicHeight(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: Text(
-                            'Reset Password',
-                            style: mediumBoldTextStyle,
-                          ),
+                  child: Center(
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: 379),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              child: Text(
+                                'Reset Password',
+                                style: mediumBoldTextStyle,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            TextFieldInput(
+                              key: _newPasswordKey,
+                              obscureText: _obscureNewPassword,
+                              labelText: 'New Password',
+                              controller: _newPasswordController,
+                              validator: (value) => Validator.password(value),
+                              requiredInput: true,
+                              suffixIcon: IconButton(
+                                focusColor: transparentColor,
+                                highlightColor: transparentColor,
+                                hoverColor: transparentColor,
+                                icon: _obscureNewPassword
+                                    ? SvgPicture.asset(
+                                        'assets/icons/icon_eye_disabled.svg',
+                                        width: 24,
+                                        height: 24,
+                                      )
+                                    : Icon(Icons.visibility_outlined),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureNewPassword = !_obscureNewPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            TextFieldInput(
+                              key: _newConfirmationPasswordKey,
+                              obscureText: _obscureConfirmationPassword,
+                              labelText: 'Confirm new password',
+                              controller: _newConfirmationPasswordController,
+                              validator: (value) => Validator.confirmPassword(
+                                value,
+                                _newPasswordController.text,
+                              ),
+                              requiredInput: true,
+                              suffixIcon: IconButton(
+                                focusColor: transparentColor,
+                                highlightColor: transparentColor,
+                                hoverColor: transparentColor,
+                                icon: _obscureConfirmationPassword
+                                    ? SvgPicture.asset(
+                                        'assets/icons/icon_eye_disabled.svg',
+                                        width: 24,
+                                        height: 24,
+                                      )
+                                    : Icon(Icons.visibility_outlined),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmationPassword =
+                                        !_obscureConfirmationPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 16),
-                        TextFieldInput(
-                          key: _newPasswordKey,
-                          obscureText: _obscureNewPassword,
-                          labelText: 'New Password',
-                          controller: _newPasswordController,
-                          validator: (value) => Validator.password(value),
-                          requiredInput: true,
-                          suffixIcon: IconButton(
-                            focusColor: transparentColor,
-                            highlightColor: transparentColor,
-                            hoverColor: transparentColor,
-                            icon: _obscureNewPassword
-                                ? SvgPicture.asset(
-                                    'assets/icons/icon_eye_disabled.svg',
-                                    width: 24,
-                                    height: 24,
-                                  )
-                                : Icon(Icons.visibility_outlined),
-                            onPressed: () {
-                              setState(() {
-                                _obscureNewPassword = !_obscureNewPassword;
-                              });
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        TextFieldInput(
-                          key: _newConfirmationPasswordKey,
-                          obscureText: _obscureConfirmationPassword,
-                          labelText: 'Confirm new password',
-                          controller: _newConfirmationPasswordController,
-                          validator: (value) => Validator.confirmPassword(
-                            value,
-                            _newPasswordController.text,
-                          ),
-                          requiredInput: true,
-                          suffixIcon: IconButton(
-                            focusColor: transparentColor,
-                            highlightColor: transparentColor,
-                            hoverColor: transparentColor,
-                            icon: _obscureConfirmationPassword
-                                ? SvgPicture.asset(
-                                    'assets/icons/icon_eye_disabled.svg',
-                                    width: 24,
-                                    height: 24,
-                                  )
-                                : Icon(Icons.visibility_outlined),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirmationPassword =
-                                    !_obscureConfirmationPassword;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -145,20 +149,31 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-              decoration: BoxDecoration(
-                color: whiteColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x0D000000),
-                    offset: Offset(0, -2),
-                    blurRadius: 4,
-                    spreadRadius: 0,
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: whiteColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0D000000),
+                      offset: Offset(0, -2),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 379),
+                    child: AppButton(
+                      onPressed: _resetPassword,
+                      label: 'Submit',
+                    ),
                   ),
-                ],
+                ),
               ),
-              child: AppButton(onPressed: _resetPassword, label: 'Submit'),
             ),
           ),
         ],

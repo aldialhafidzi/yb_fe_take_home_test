@@ -75,215 +75,222 @@ class _HomePageState extends State<HomePage> {
             minHeight: MediaQuery.of(context).size.height,
           ),
           child: IntrinsicHeight(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 32,
-                        height: 32,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: EdgeInsets.all(0),
-                            backgroundColor: whiteColor,
-                          ),
-                          child: Icon(
-                            Icons.notifications_active_outlined,
-                            size: 24,
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              padding: EdgeInsets.all(0),
+                              backgroundColor: whiteColor,
+                            ),
+                            child: Icon(
+                              Icons.notifications_active_outlined,
+                              size: 24,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  SizedBox(
-                    child: TextFieldInput(
-                      labelText: '',
-                      clearableText: true,
-                      prefixIcon: Icon(Icons.search_outlined),
-                      suffixIcon: Icon(Icons.tune_outlined),
-                      hintText: 'Search..',
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        child: Text('Trending', style: linkMediumTextStyle),
+                    SizedBox(height: 16),
+                    SizedBox(
+                      child: TextFieldInput(
+                        labelText: '',
+                        clearableText: true,
+                        prefixIcon: Icon(Icons.search_outlined),
+                        suffixIcon: Icon(Icons.tune_outlined),
+                        hintText: 'Search..',
                       ),
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        onTap: () {
-                          context.go('/articles/technology');
-                        },
-                        child: Text('See All', style: smallTextStyle),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  FutureBuilder<List<Article>>(
-                    future: trendingArticles,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(
-                          height: 250,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      } else if (snapshot.hasError) {
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          child: Text('Trending', style: linkMediumTextStyle),
+                        ),
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            context.go('/articles/technology');
+                          },
+                          child: Text('See All', style: smallTextStyle),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    FutureBuilder<List<Article>>(
+                      future: trendingArticles,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox(
+                            height: 250,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        } else if (snapshot.hasError) {
+                          return SizedBox(
+                            height: 250,
+                            child: Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            ),
+                          );
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const SizedBox(
+                            height: 250,
+                            child: Center(child: Text('No articles found')),
+                          );
+                        }
+
+                        final article = snapshot.data![0];
+
                         return SizedBox(
-                          height: 250,
-                          child: Center(
-                            child: Text('Error: ${snapshot.error}'),
+                          child: CardArticleLarge(
+                            title: article.title,
+                            description: article.description,
+                            subtitle: 'General',
+                            source: article.sourceName,
+                            imageURL: article.imageUrl,
+                            date: article.publishedAt,
                           ),
                         );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const SizedBox(
-                          height: 250,
-                          child: Center(child: Text('No articles found')),
-                        );
-                      }
-
-                      final article = snapshot.data![0];
-
-                      return SizedBox(
-                        child: CardArticleLarge(
-                          title: article.title,
-                          description: article.description,
-                          subtitle: 'General',
-                          source: article.sourceName,
-                          imageURL: article.imageUrl,
-                          date: article.publishedAt,
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          child: Text('Latest', style: linkMediumTextStyle),
                         ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        child: Text('Latest', style: linkMediumTextStyle),
-                      ),
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        onTap: () {
-                          context.go('/articles/general');
-                        },
-                        child: Text('See All', style: smallTextStyle),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Chips horizontal
-                      Container(
-                        height: 50,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 0,
-                          vertical: 8,
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            context.go('/articles/general');
+                          },
+                          child: Text('See All', style: smallTextStyle),
                         ),
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: categories.map((cat) {
-                            final bool isSelected =
-                                cat['category'] == selectedCategory;
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Chips horizontal
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: 8,
+                          ),
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: categories.map((cat) {
+                              final bool isSelected =
+                                  cat['category'] == selectedCategory;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: isSelected
+                                            ? primaryDarkModeColor
+                                            : transparentColor, // warna border
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    child: Text(
+                                      cat['title']!,
+                                      style: mediumTextStyle.copyWith(
+                                        color: isSelected
+                                            ? Colors.black
+                                            : grayscaleBodyTextColor,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory = cat['category']!;
+                                        latestArticles = newsService
+                                            .fetchTopArticles(selectedCategory);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    FutureBuilder<List<Article>>(
+                      future: latestArticles,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox(
+                            height: 250,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        } else if (snapshot.hasError) {
+                          return SizedBox(
+                            height: 250,
+                            child: Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            ),
+                          );
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const SizedBox(
+                            height: 250,
+                            child: Center(child: Text('No articles found')),
+                          );
+                        }
+
+                        final articles = snapshot.data!;
+                        return Column(
+                          children: articles.map((article) {
                             return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: isSelected
-                                          ? primaryDarkModeColor
-                                          : transparentColor, // warna border
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                                child: InkWell(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  child: Text(
-                                    cat['title']!,
-                                    style: mediumTextStyle.copyWith(
-                                      color: isSelected
-                                          ? Colors.black
-                                          : grayscaleBodyTextColor,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      selectedCategory = cat['category']!;
-                                      latestArticles = newsService
-                                          .fetchTopArticles(selectedCategory);
-                                    });
-                                  },
-                                ),
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: CardArticleSmall(
+                                title: article.title,
+                                subtitle:
+                                    selectedCategory[0].toUpperCase() +
+                                    selectedCategory.substring(1),
+                                source: article.sourceName,
+                                imageURL: article.imageUrl,
+                                date: article.publishedAt,
                               ),
                             );
                           }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  FutureBuilder<List<Article>>(
-                    future: latestArticles,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(
-                          height: 250,
-                          child: Center(child: CircularProgressIndicator()),
                         );
-                      } else if (snapshot.hasError) {
-                        return SizedBox(
-                          height: 250,
-                          child: Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          ),
-                        );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const SizedBox(
-                          height: 250,
-                          child: Center(child: Text('No articles found')),
-                        );
-                      }
-
-                      final articles = snapshot.data!;
-                      return Column(
-                        children: articles.map((article) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: CardArticleSmall(
-                              title: article.title,
-                              subtitle:
-                                  selectedCategory[0].toUpperCase() +
-                                  selectedCategory.substring(1),
-                              source: article.sourceName,
-                              imageURL: article.imageUrl,
-                              date: article.publishedAt,
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ],
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -293,35 +300,49 @@ class _HomePageState extends State<HomePage> {
         surfaceTintColor: whiteColor,
         color: whiteColor,
         padding: EdgeInsets.all(0),
-        child: Container(
-          height: 76,
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(width: 2, color: greenColor)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly, // <--- penting
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              buildMenuItem(Icons.home_outlined, 'Home', '/home', context),
-              buildMenuItem(
-                Icons.explore_outlined,
-                'Explore',
-                '/explore',
-                context,
+        child: Center(
+          child: Container(
+            height: 76,
+            constraints: BoxConstraints(maxWidth: 379),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(width: 2, color: greenColor)),
+            ),
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceEvenly, // <--- penting
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buildMenuItem(
+                      Icons.home_outlined,
+                      'Home',
+                      '/home',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.explore_outlined,
+                      'Explore',
+                      '/explore',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.bookmark_outline,
+                      'Bookmark',
+                      '/bookmark',
+                      context,
+                    ),
+                    buildMenuItem(
+                      Icons.account_circle_outlined,
+                      'Profile',
+                      '/profile',
+                      context,
+                    ),
+                  ],
+                ),
               ),
-              buildMenuItem(
-                Icons.bookmark_outline,
-                'Bookmark',
-                '/bookmark',
-                context,
-              ),
-              buildMenuItem(
-                Icons.account_circle_outlined,
-                'Profile',
-                '/profile',
-                context,
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -82,203 +82,208 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 width: double.infinity,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 155,
-                        child: Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 379),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 155,
+                            child: Stack(
                               children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    'Hello',
-                                    style: largeBoldTextStyle.copyWith(
-                                      color: primaryDefaultColor,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                        'Hello',
+                                        style: largeBoldTextStyle.copyWith(
+                                          color: primaryDefaultColor,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
                                     ),
-                                    textAlign: TextAlign.left,
-                                  ),
+                                    const SizedBox(height: 4),
+                                    SizedBox(
+                                      width: 222,
+                                      child: Text(
+                                        'Signup to get Started',
+                                        style: largeTextStyle,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                SizedBox(
-                                  width: 222,
-                                  child: Text(
-                                    'Signup to get Started',
-                                    style: largeTextStyle,
+                                Positioned(
+                                  top: 0, // posisi atas
+                                  right: 0, // posisi kanan
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: greenColor,
+                                      borderRadius: BorderRadius.circular(
+                                        10,
+                                      ), // setengah ukuran box = bulat
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            Positioned(
-                              top: 0, // posisi atas
-                              right: 0, // posisi kanan
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: greenColor,
-                                  borderRadius: BorderRadius.circular(
-                                    10,
-                                  ), // setengah ukuran box = bulat
-                                ),
-                              ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextFieldInput(
+                            key: _nameKey,
+                            labelText: 'Full Name',
+                            controller: _nameController,
+                            validator: (value) => Validator.minLength(value, 2),
+                            requiredInput: true,
+                            clearableText: true,
+                          ),
+                          const SizedBox(height: 12),
+                          TextFieldInput(
+                            key: _emailKey,
+                            labelText: 'Email',
+                            controller: _emailController,
+                            validator: (value) => Validator.email(value),
+                            requiredInput: true,
+                            clearableText: true,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFieldInput(
+                            key: _emailConfirmationKey,
+                            labelText: 'Email Confirmation',
+                            controller: _emailConfirmationController,
+                            validator: (value) => Validator.email(value),
+                            requiredInput: true,
+                            clearableText: true,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFieldInput(
+                            key: _passwordKey,
+                            labelText: 'Password',
+                            controller: _passwordController,
+                            validator: (value) => Validator.password(value),
+                            obscureText: _obscure,
+                            requiredInput: true,
+                            suffixIcon: IconButton(
+                              focusColor: transparentColor,
+                              highlightColor: transparentColor,
+                              hoverColor: transparentColor,
+                              icon: _obscure
+                                  ? SvgPicture.asset(
+                                      'assets/icons/icon_eye_disabled.svg',
+                                      width: 24,
+                                      height: 24,
+                                    )
+                                  : Icon(Icons.visibility_outlined),
+                              onPressed: () {
+                                setState(() {
+                                  _obscure = !_obscure;
+                                });
+                              },
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextFieldInput(
-                        key: _nameKey,
-                        labelText: 'Full Name',
-                        controller: _nameController,
-                        validator: (value) => Validator.minLength(value, 2),
-                        requiredInput: true,
-                        clearableText: true,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFieldInput(
-                        key: _emailKey,
-                        labelText: 'Email',
-                        controller: _emailController,
-                        validator: (value) => Validator.email(value),
-                        requiredInput: true,
-                        clearableText: true,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFieldInput(
-                        key: _emailConfirmationKey,
-                        labelText: 'Email Confirmation',
-                        controller: _emailConfirmationController,
-                        validator: (value) => Validator.email(value),
-                        requiredInput: true,
-                        clearableText: true,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFieldInput(
-                        key: _passwordKey,
-                        labelText: 'Password',
-                        controller: _passwordController,
-                        validator: (value) => Validator.password(value),
-                        obscureText: _obscure,
-                        requiredInput: true,
-                        suffixIcon: IconButton(
-                          focusColor: transparentColor,
-                          highlightColor: transparentColor,
-                          hoverColor: transparentColor,
-                          icon: _obscure
-                              ? SvgPicture.asset(
-                                  'assets/icons/icon_eye_disabled.svg',
-                                  width: 24,
-                                  height: 24,
-                                )
-                              : Icon(Icons.visibility_outlined),
-                          onPressed: () {
-                            setState(() {
-                              _obscure = !_obscure;
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFieldInput(
-                        key: _confirmPasswordKey,
-                        labelText: 'Password Confirmation',
-                        controller: _confirmPasswordController,
-                        validator: (value) => Validator.confirmPassword(
-                          value,
-                          _passwordController.text,
-                        ),
-                        obscureText: _obscure,
-                        requiredInput: true,
-                        suffixIcon: IconButton(
-                          focusColor: transparentColor,
-                          highlightColor: transparentColor,
-                          hoverColor: transparentColor,
-                          icon: _obscure
-                              ? SvgPicture.asset(
-                                  'assets/icons/icon_eye_disabled.svg',
-                                  width: 24,
-                                  height: 24,
-                                )
-                              : Icon(Icons.visibility_outlined),
-                          onPressed: () {
-                            setState(() {
-                              _obscure = !_obscure;
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                          ),
+                          const SizedBox(height: 8),
+                          TextFieldInput(
+                            key: _confirmPasswordKey,
+                            labelText: 'Password Confirmation',
+                            controller: _confirmPasswordController,
+                            validator: (value) => Validator.confirmPassword(
+                              value,
+                              _passwordController.text,
+                            ),
+                            obscureText: _obscure,
+                            requiredInput: true,
+                            suffixIcon: IconButton(
+                              focusColor: transparentColor,
+                              highlightColor: transparentColor,
+                              hoverColor: transparentColor,
+                              icon: _obscure
+                                  ? SvgPicture.asset(
+                                      'assets/icons/icon_eye_disabled.svg',
+                                      width: 24,
+                                      height: 24,
+                                    )
+                                  : Icon(Icons.visibility_outlined),
+                              onPressed: () {
+                                setState(() {
+                                  _obscure = !_obscure;
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              CheckboxFieldInput(
-                                value: _rememberMe,
-                                labelText: 'Remember me',
-                                onChanged: (v) {
-                                  setState(() {
-                                    _rememberMe = v;
-                                  });
-                                },
+                              Row(
+                                children: [
+                                  CheckboxFieldInput(
+                                    value: _rememberMe,
+                                    labelText: 'Remember me',
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _rememberMe = v;
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
+                          const SizedBox(height: 16),
+                          AppButton(
+                            label: 'Register',
+                            variant: AppButtonVariant.primary,
+                            onPressed: _register,
+                            isLoading: _loading,
+                          ),
+                          const SizedBox(height: 16),
+                          Text('or continue with'),
+                          const SizedBox(height: 16),
+                          AppButton(
+                            label: 'Google',
+                            width: 174,
+                            variant: AppButtonVariant.secondary,
+                            isLoading: _loading,
+                            leadingIcon: Image.asset(
+                              'assets/icons/icon_google_auth.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            onPressed: () {},
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Already have an account ? '),
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  onTap: () {
+                                    context.go('/login');
+                                  },
+                                  child: Text(
+                                    'Login',
+                                    style: linkXSmallTextStyle.copyWith(
+                                      color: primaryDefaultColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      AppButton(
-                        label: 'Register',
-                        variant: AppButtonVariant.primary,
-                        onPressed: _register,
-                        isLoading: _loading,
-                      ),
-                      const SizedBox(height: 16),
-                      Text('or continue with'),
-                      const SizedBox(height: 16),
-                      AppButton(
-                        label: 'Google',
-                        width: 174,
-                        variant: AppButtonVariant.secondary,
-                        isLoading: _loading,
-                        leadingIcon: Image.asset(
-                          'assets/icons/icon_google_auth.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Already have an account ? '),
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              onTap: () {
-                                context.go('/login');
-                              },
-                              child: Text(
-                                'Login',
-                                style: linkXSmallTextStyle.copyWith(
-                                  color: primaryDefaultColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

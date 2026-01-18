@@ -58,7 +58,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Login gagal: E-mail atau Password tidak ditemukan!'),
+              content: Text(
+                'Login gagal: E-mail atau Password tidak ditemukan!',
+              ),
               backgroundColor: errorDarkColor,
             ),
           );
@@ -92,178 +94,183 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 width: double.infinity,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 240,
-                        child: Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 379),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 240,
+                            child: Stack(
                               children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    'Hello',
-                                    style: largeBoldTextStyle,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    'Again!',
-                                    style: largeBoldTextStyle.copyWith(
-                                      color: primaryDefaultColor,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                        'Hello',
+                                        style: largeBoldTextStyle,
+                                      ),
                                     ),
-                                    textAlign: TextAlign.left,
-                                  ),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                        'Again!',
+                                        style: largeBoldTextStyle.copyWith(
+                                          color: primaryDefaultColor,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    SizedBox(
+                                      width: 222,
+                                      child: Text(
+                                        'Welcome back you’ve been missed',
+                                        style: largeTextStyle,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                SizedBox(
-                                  width: 222,
-                                  child: Text(
-                                    'Welcome back you’ve been missed',
-                                    style: largeTextStyle,
+                                Positioned(
+                                  top: 0, // posisi atas
+                                  right: 0, // posisi kanan
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: greenColor,
+                                      borderRadius: BorderRadius.circular(
+                                        10,
+                                      ), // setengah ukuran box = bulat
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            Positioned(
-                              top: 0, // posisi atas
-                              right: 0, // posisi kanan
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: greenColor,
-                                  borderRadius: BorderRadius.circular(
-                                    10,
-                                  ), // setengah ukuran box = bulat
-                                ),
-                              ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextFieldInput(
+                            key: _emailKey,
+                            labelText: 'Email',
+                            controller: _emailController,
+                            validator: (value) => Validator.email(value),
+                            requiredInput: true,
+                            clearableText: true,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFieldInput(
+                            key: _passwordKey,
+                            labelText: 'Password',
+                            controller: _passwordController,
+                            validator: (value) => Validator.password(value),
+                            obscureText: _obscure,
+                            requiredInput: true,
+                            suffixIcon: IconButton(
+                              focusColor: transparentColor,
+                              highlightColor: transparentColor,
+                              hoverColor: transparentColor,
+                              icon: _obscure
+                                  ? SvgPicture.asset(
+                                      'assets/icons/icon_eye_disabled.svg',
+                                      width: 24,
+                                      height: 24,
+                                    )
+                                  : Icon(Icons.visibility_outlined),
+                              onPressed: () {
+                                setState(() {
+                                  _obscure = !_obscure;
+                                });
+                              },
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextFieldInput(
-                        key: _emailKey,
-                        labelText: 'Email',
-                        controller: _emailController,
-                        validator: (value) => Validator.email(value),
-                        requiredInput: true,
-                        clearableText: true,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFieldInput(
-                        key: _passwordKey,
-                        labelText: 'Password',
-                        controller: _passwordController,
-                        validator: (value) => Validator.password(value),
-                        obscureText: _obscure,
-                        requiredInput: true,
-                        suffixIcon: IconButton(
-                          focusColor: transparentColor,
-                          highlightColor: transparentColor,
-                          hoverColor: transparentColor,
-                          icon: _obscure
-                              ? SvgPicture.asset(
-                                  'assets/icons/icon_eye_disabled.svg',
-                                  width: 24,
-                                  height: 24,
-                                )
-                              : Icon(Icons.visibility_outlined),
-                          onPressed: () {
-                            setState(() {
-                              _obscure = !_obscure;
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                          ),
+                          const SizedBox(height: 8),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              CheckboxFieldInput(
-                                value: _rememberMe,
-                                labelText: 'Remember me',
-                                onChanged: (v) {
-                                  setState(() {
-                                    _rememberMe = v;
-                                  });
+                              Row(
+                                children: [
+                                  CheckboxFieldInput(
+                                    value: _rememberMe,
+                                    labelText: 'Remember me',
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _rememberMe = v;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                onTap: () {
+                                  context.go('/forgot-password');
                                 },
+                                child: Text(
+                                  'Forgot the password?',
+                                  style: smallTextStyle.copyWith(
+                                    color: primaryDarkModeColor,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            onTap: () {
-                              context.go('/forgot-password');
-                            },
-                            child: Text(
-                              'Forgot the password?',
-                              style: smallTextStyle.copyWith(
-                                color: primaryDarkModeColor,
-                              ),
+                          const SizedBox(height: 16),
+                          AppButton(
+                            label: 'Login',
+                            variant: AppButtonVariant.primary,
+                            onPressed: _login,
+                            isLoading: _loading,
+                          ),
+                          const SizedBox(height: 16),
+                          Text('or continue with'),
+                          const SizedBox(height: 16),
+                          AppButton(
+                            label: 'Google',
+                            width: 174,
+                            variant: AppButtonVariant.secondary,
+                            leadingIcon: Image.asset(
+                              'assets/icons/icon_google_auth.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            onPressed: () {},
+                            isLoading: _loading,
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('don’t have an account ? '),
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  onTap: () {
+                                    context.go('/register');
+                                  },
+                                  child: Text(
+                                    'Sign Up',
+                                    style: linkXSmallTextStyle.copyWith(
+                                      color: primaryDefaultColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      AppButton(
-                        label: 'Login',
-                        variant: AppButtonVariant.primary,
-                        onPressed: _login,
-                        isLoading: _loading,
-                      ),
-                      const SizedBox(height: 16),
-                      Text('or continue with'),
-                      const SizedBox(height: 16),
-                      AppButton(
-                        label: 'Google',
-                        width: 174,
-                        variant: AppButtonVariant.secondary,
-                        leadingIcon: Image.asset(
-                          'assets/icons/icon_google_auth.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                        onPressed: () {},
-                        isLoading: _loading,
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('don’t have an account ? '),
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              onTap: () {
-                                context.go('/register');
-                              },
-                              child: Text(
-                                'Sign Up',
-                                style: linkXSmallTextStyle.copyWith(
-                                  color: primaryDefaultColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

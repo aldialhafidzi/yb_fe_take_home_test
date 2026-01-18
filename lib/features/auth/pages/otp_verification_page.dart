@@ -80,37 +80,42 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
               child: IntrinsicHeight(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Form(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: Text(
-                            'OTP Verification',
-                            style: mediumBoldTextStyle,
-                          ),
+                  child: Center(
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: 379),
+                      child: Form(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              child: Text(
+                                'OTP Verification',
+                                style: mediumBoldTextStyle,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Enter the OTP sent to ${user?.email ?? ''}',
+                              style: mediumTextStyle,
+                            ),
+                            SizedBox(height: 27),
+                            OtpInputField(
+                              length: 4,
+                              errorText: _errorText,
+                              onCompleted: (otp) {
+                                setState(() {
+                                  _otpText = otp;
+                                });
+                              },
+                            ),
+                            SizedBox(height: 27),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [OtpCountdown(countdownSeconds: 60)],
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 5),
-                        Text(
-                          'Enter the OTP sent to ${user?.email ?? ''}',
-                          style: mediumTextStyle,
-                        ),
-                        SizedBox(height: 27),
-                        OtpInputField(
-                          length: 4,
-                          errorText: _errorText,
-                          onCompleted: (otp) {
-                            setState(() {
-                              _otpText = otp;
-                            });
-                          },
-                        ),
-                        SizedBox(height: 27),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [OtpCountdown(countdownSeconds: 60)],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -121,23 +126,31 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-              decoration: BoxDecoration(
-                color: whiteColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x0D000000),
-                    offset: Offset(0, -2),
-                    blurRadius: 4,
-                    spreadRadius: 0,
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 379),
+                padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: whiteColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0D000000),
+                      offset: Offset(0, -2),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 379),
+                    child: AppButton(
+                      onPressed: _verifyOTP,
+                      label: 'Verify',
+                      isLoading: _loading,
+                    ),
                   ),
-                ],
-              ),
-              child: AppButton(
-                onPressed: _verifyOTP,
-                label: 'Verify',
-                isLoading: _loading,
+                ),
               ),
             ),
           ),
