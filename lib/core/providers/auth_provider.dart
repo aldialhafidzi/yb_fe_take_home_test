@@ -35,7 +35,6 @@ class AuthNotifier extends ChangeNotifier {
 
   void logout() {
     _user = null;
-    isLoggedOTP = false;
     notifyListeners();
   }
 }
