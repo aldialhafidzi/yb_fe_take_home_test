@@ -96,7 +96,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 width: double.infinity,
                 child: Center(
                   child: Container(
-                    constraints: BoxConstraints(maxWidth: 379),
+                    constraints: BoxConstraints(maxWidth: 450),
                     child: Form(
                       key: _formKey,
                       child: Column(

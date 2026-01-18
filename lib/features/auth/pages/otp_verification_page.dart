@@ -82,7 +82,7 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Center(
                     child: Container(
-                      constraints: BoxConstraints(maxWidth: 379),
+                      constraints: BoxConstraints(maxWidth: 450),
                       child: Form(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,7 +128,7 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
             right: 0,
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
                 decoration: BoxDecoration(
                   color: whiteColor,
@@ -143,7 +143,7 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: BoxConstraints(maxWidth: 379),
+                    constraints: BoxConstraints(maxWidth: 450),
                     child: AppButton(
                       onPressed: _verifyOTP,
                       label: 'Verify',

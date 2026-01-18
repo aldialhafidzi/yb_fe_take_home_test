@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           child: IntrinsicHeight(
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   children: [
@@ -303,13 +303,13 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: Container(
             height: 76,
-            constraints: BoxConstraints(maxWidth: 379),
+            constraints: BoxConstraints(maxWidth: 450),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(width: 2, color: greenColor)),
             ),
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 child: Row(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceEvenly, // <--- penting

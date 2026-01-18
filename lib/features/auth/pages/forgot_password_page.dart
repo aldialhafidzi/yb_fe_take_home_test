@@ -44,7 +44,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Center(
                     child: Container(
-                      constraints: BoxConstraints(maxWidth: 379),
+                      constraints: BoxConstraints(maxWidth: 450),
                       child: Form(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +84,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             right: 0,
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
                 decoration: BoxDecoration(
                   color: whiteColor,
@@ -99,7 +99,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: BoxConstraints(maxWidth: 379),
+                    constraints: BoxConstraints(maxWidth: 450),
                     child: AppButton(
                       onPressed: () {
                         context.go('/login');

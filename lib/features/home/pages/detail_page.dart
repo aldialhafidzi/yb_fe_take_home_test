@@ -66,7 +66,7 @@ class _DetailPageState extends State<DetailPage> {
   void initState() {
     super.initState();
     detailArticles = newsService.fetchArticles(
-      widget.title.substring(0, 10),
+      widget.title.split(' ').take(2).join(' '),
       '1',
     );
   }
@@ -107,12 +107,12 @@ class _DetailPageState extends State<DetailPage> {
       body: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
+            minHeight: MediaQuery.of(context).size.height - 150,
           ),
           child: IntrinsicHeight(
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 child: FutureBuilder<List<Article>>(
                   future: detailArticles,
@@ -249,7 +249,7 @@ class _DetailPageState extends State<DetailPage> {
         child: Center(
           child: Container(
             height: 76,
-            constraints: BoxConstraints(maxWidth: 379),
+            constraints: BoxConstraints(maxWidth: 450),
             padding: EdgeInsetsDirectional.symmetric(horizontal: 24),
             decoration: BoxDecoration(
               border: Border(bottom: BorderSide(width: 2, color: greenColor)),

@@ -68,7 +68,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Center(
                     child: Container(
-                      constraints: BoxConstraints(maxWidth: 379),
+                      constraints: BoxConstraints(maxWidth: 450),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -151,7 +151,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
             right: 0,
             child: Center(
               child: Container(
-                constraints: BoxConstraints(maxWidth: 379),
+                constraints: BoxConstraints(maxWidth: 450),
                 padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
                 decoration: BoxDecoration(
                   color: whiteColor,
@@ -166,7 +166,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: BoxConstraints(maxWidth: 379),
+                    constraints: BoxConstraints(maxWidth: 450),
                     child: AppButton(
                       onPressed: _resetPassword,
                       label: 'Submit',

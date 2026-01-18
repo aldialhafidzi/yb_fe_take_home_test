@@ -33,6 +33,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           child: IntrinsicHeight(
             child: Center(
               child: Container(
+                constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 width: double.infinity,
                 child: Form(
@@ -41,7 +42,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: 240,
+                        height: 500,
                         child: Stack(
                           children: [
                             Column(
@@ -93,11 +94,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       ),
                       const SizedBox(height: 12),
                       AppButton(
-                        label: 'Logout',
+                        label: 'Back To Home',
                         variant: AppButtonVariant.primary,
-                        onPressed: _logout,
+                        onPressed: () {
+                          context.go('/home');
+                        },
                       ),
                       const SizedBox(height: 16),
+                      AppButton(
+                        label: 'Logout',
+                        variant: AppButtonVariant.secondary,
+                        onPressed: _logout,
+                      ),
                     ],
                   ),
                 ),
