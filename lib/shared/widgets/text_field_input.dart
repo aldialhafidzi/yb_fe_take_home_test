@@ -1,0 +1,124 @@
+import 'package:flutter/material.dart';
+import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
+
+class TextFieldInput extends StatefulWidget {
+  final String labelText;
+  final String? hintText;
+  final bool obscureText;
+  final bool clearableText;
+  final bool requiredInput;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator; // Bisa pakai utils validator
+
+  const TextFieldInput({
+    super.key,
+    required this.labelText,
+    this.hintText = '',
+    this.requiredInput = false,
+    this.obscureText = false,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.controller,
+    this.validator,
+    this.clearableText = false,
+  });
+
+  @override
+  State<TextFieldInput> createState() => TextFieldInputState();
+}
+
+class TextFieldInputState extends State<TextFieldInput> {
+  String? errorText;
+
+  void reset() {
+    setState(() {
+      widget.controller?.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Label + asterisk
+        Row(
+          children: [
+            if (widget.labelText != '') Text(widget.labelText),
+            if (widget.requiredInput)
+              Text('*', style: TextStyle(color: errorDarkColor)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            TextFormField(
+              controller: widget.controller,
+              obscureText: widget.obscureText,
+              validator: (value) {
+                String? result;
+
+                if (widget.requiredInput && (value == null || value.isEmpty)) {
+                  result = '${widget.labelText} is required';
+                }
+
+                if (result == null && widget.validator != null) {
+                  result = widget.validator!(value);
+                }
+
+                setState(() {
+                  errorText = result;
+                });
+
+                return result != null ? '' : null;
+              },
+              decoration: InputDecoration(
+                filled: true,
+                hintText: widget.hintText,
+                hintStyle: smallTextStyle.copyWith(color: grayscaleColor),
+                fillColor: errorText != null ? errorLightColor : whiteColor,
+                prefixIcon: widget.prefixIcon,
+                suffixIcon: (errorText != null && widget.clearableText)
+                    ? IconButton(
+                        onPressed: reset,
+                        icon: Icon(Icons.close),
+                        focusColor: transparentColor,
+                        highlightColor: transparentColor,
+                        hoverColor: transparentColor,
+                      )
+                    : widget.suffixIcon,
+                border: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                  borderSide: BorderSide(
+                    color: grayscaleBodyTextColor,
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+
+            if (errorText != null)
+              Positioned(
+                bottom: -2,
+                left: 0,
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, size: 16, color: errorDarkColor),
+                    SizedBox(width: 4),
+                    Text(
+                      errorText!,
+                      style: smallTextStyle.copyWith(color: errorDarkColor),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        // TextFormField
+      ],
+    );
+  }
+}
