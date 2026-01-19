@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
+import 'package:yb_fe_take_home_test/shared/widgets/custom_app_bar.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/otp_field_input.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/otp_countdown.dart';
 import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
@@ -58,101 +59,72 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
     final user = ref.watch(authProvider).user;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: whiteColor,
-        surfaceTintColor: whiteColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go('/login');
-          },
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height - 150,
+          ),
+          child: IntrinsicHeight(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Center(
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: 450),
+                  child: Form(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: Text(
+                            'OTP Verification',
+                            style: mediumBoldTextStyle,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'Enter the OTP sent to ${user?.email ?? ''}',
+                          style: mediumTextStyle,
+                        ),
+                        SizedBox(height: 27),
+                        OtpInputField(
+                          length: 4,
+                          errorText: _errorText,
+                          onCompleted: (otp) {
+                            setState(() {
+                              _otpText = otp;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 27),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [OtpCountdown(countdownSeconds: 60)],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height - 56,
-              ),
-              child: IntrinsicHeight(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Center(
-                    child: Container(
-                      constraints: BoxConstraints(maxWidth: 450),
-                      child: Form(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                'OTP Verification',
-                                style: mediumBoldTextStyle,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Enter the OTP sent to ${user?.email ?? ''}',
-                              style: mediumTextStyle,
-                            ),
-                            SizedBox(height: 27),
-                            OtpInputField(
-                              length: 4,
-                              errorText: _errorText,
-                              onCompleted: (otp) {
-                                setState(() {
-                                  _otpText = otp;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 27),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [OtpCountdown(countdownSeconds: 60)],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+      bottomNavigationBar: BottomAppBar(
+        color: whiteColor,
+        surfaceTintColor: whiteColor,
+        shadowColor: whiteColor,
+        padding: EdgeInsets.symmetric(horizontal: 24),
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 450),
+            child: AppButton(
+              onPressed: _verifyOTP,
+              label: 'Verify',
+              isLoading: _loading,
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 450),
-                padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: whiteColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x0D000000),
-                      offset: Offset(0, -2),
-                      blurRadius: 4,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 450),
-                    child: AppButton(
-                      onPressed: _verifyOTP,
-                      label: 'Verify',
-                      isLoading: _loading,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
