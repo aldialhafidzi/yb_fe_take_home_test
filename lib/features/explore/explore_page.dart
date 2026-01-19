@@ -10,17 +10,16 @@ import 'package:yb_fe_take_home_test/shared/widgets/card_article_small.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/custom_buttom_app_bar.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ExplorePage extends StatefulWidget {
+  const ExplorePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ExplorePage> createState() => _ExplorePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ExplorePageState extends State<ExplorePage> {
   final ArticlesServices newsService = ArticlesServices();
 
-  late Future<List<Article>> trendingArticles;
   late Future<List<Article>> latestArticles;
 
   String selectedCategory = 'general';
@@ -52,9 +51,9 @@ class _HomePageState extends State<HomePage> {
       });
 
       if (value != '') {
-        trendingArticles = newsService.fetchArticles(value, '1');
+        latestArticles = newsService.fetchArticles(value, '11');
       } else {
-        trendingArticles = newsService.fetchArticles('Bali', '1');
+        latestArticles = newsService.fetchArticles('Bali', '11');
       }
     });
   }
@@ -69,8 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    trendingArticles = newsService.fetchArticles('Bali', '1');
-    latestArticles = newsService.fetchTopArticles(selectedCategory);
+    latestArticles = newsService.fetchArticles('Bali', '11');
   }
 
   @override
@@ -124,25 +122,11 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          child: Text('Latest', style: linkMediumTextStyle),
-                        ),
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          onTap: () {
-                            context.go('/articles/technology');
-                          },
-                          child: Text('See All', style: smallTextStyle),
-                        ),
-                      ],
+                      children: [Text('Explore', style: linkMediumTextStyle)],
                     ),
                     SizedBox(height: 16),
                     FutureBuilder<List<Article>>(
-                      future: trendingArticles,
+                      future: latestArticles,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -180,83 +164,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                     SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          child: Text(
-                            'Top Headlines',
-                            style: linkMediumTextStyle,
-                          ),
-                        ),
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          onTap: () {
-                            context.go('/articles/$selectedCategory');
-                          },
-                          child: Text('See All', style: smallTextStyle),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 50,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 8,
-                          ),
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: categories.map((cat) {
-                              final bool isSelected =
-                                  cat['category'] == selectedCategory;
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: isSelected
-                                            ? primaryDarkModeColor
-                                            : transparentColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                  ),
-                                  child: InkWell(
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    child: Text(
-                                      cat['title']!,
-                                      style: mediumTextStyle.copyWith(
-                                        color: isSelected
-                                            ? Colors.black
-                                            : grayscaleBodyTextColor,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        selectedCategory = cat['category']!;
-                                        latestArticles = newsService
-                                            .fetchTopArticles(selectedCategory);
-                                      });
-                                    },
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
                     FutureBuilder<List<Article>>(
                       future: latestArticles,
                       builder: (context, snapshot) {
@@ -283,7 +190,7 @@ class _HomePageState extends State<HomePage> {
 
                         final articles = snapshot.data!;
                         return Column(
-                          children: articles.map((article) {
+                          children: articles.skip(1).map((article) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: CardArticleSmall(

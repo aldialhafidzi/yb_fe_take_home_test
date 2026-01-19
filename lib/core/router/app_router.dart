@@ -6,6 +6,7 @@ import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 import 'package:yb_fe_take_home_test/core/router/router_refresh_notifier.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/login_page.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/register_page.dart';
+import 'package:yb_fe_take_home_test/features/explore/explore_page.dart';
 import 'package:yb_fe_take_home_test/features/home/pages/home_page.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/forgot_password_page.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/reset_password_page.dart';
@@ -69,6 +70,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const OTPVerificationPage(),
       ),
       GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+      GoRoute(
+        path: '/explore',
+        builder: (context, state) => const ExplorePage(),
+      ),
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfilePage(),

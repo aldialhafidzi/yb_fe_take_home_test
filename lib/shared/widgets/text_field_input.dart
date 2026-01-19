@@ -11,6 +11,7 @@ class TextFieldInput extends StatefulWidget {
   final Widget? suffixIcon;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final Function? onChanged;
 
   const TextFieldInput({
     super.key,
@@ -23,6 +24,7 @@ class TextFieldInput extends StatefulWidget {
     this.controller,
     this.validator,
     this.clearableText = false,
+    this.onChanged,
   });
 
   @override
@@ -84,6 +86,8 @@ class TextFieldInputState extends State<TextFieldInput> {
                 setState(() {
                   errorText = result == '' ? null : result;
                 });
+
+                widget.onChanged?.call(value);
               },
               decoration: InputDecoration(
                 filled: true,

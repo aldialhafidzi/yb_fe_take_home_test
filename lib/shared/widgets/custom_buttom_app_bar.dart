@@ -55,7 +55,7 @@ class CustomButtomAppBar extends StatelessWidget {
                   buildMenuItem(
                     Icons.explore_outlined,
                     'Explore',
-                    '/articles/general',
+                    '/explore',
                     context,
                   ),
                   buildMenuItem(
