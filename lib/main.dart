@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yb_fe_take_home_test/shared/widgets/internet_connection_indicator.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/providers/shared_preferences_provider.dart';
@@ -30,6 +31,14 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: router,
+      builder: (context, child) {
+        return Column(
+          children: [
+            const InternetConnectionIndicator(),
+            Expanded(child: child!),
+          ],
+        );
+      },
     );
   }
 }
