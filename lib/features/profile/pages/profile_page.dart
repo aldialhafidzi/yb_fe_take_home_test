@@ -17,7 +17,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
 
   void _logout() {
-    ref.read(authProvider).logout();
+    ref.read(authProvider.notifier).logout();
     context.go('/login');
   }
 
@@ -58,7 +58,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: Text(
-                                    auth.user?.email ?? '',
+                                    auth.user?.name ?? '',
                                     style: largeBoldTextStyle.copyWith(
                                       color: primaryDefaultColor,
                                     ),

@@ -38,45 +38,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         _loading = true;
       });
 
-      // gunakan ref.read dari ConsumerState
-      final auth = ref.read(authProvider);
+      final auth = ref.read(authProvider.notifier);
 
       try {
-        bool success = await auth.login(
+        int resCode = await auth.login(
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
 
         if (!mounted) return;
-
-        if (success) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Login berhasil!')));
-
-          context.go('/otp-verification');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Login gagal: E-mail atau Password tidak ditemukan!',
-              ),
-              backgroundColor: errorDarkColor,
-            ),
-          );
-        }
-      } catch (e) {
-        print('error: $e');
+        if (resCode == 999) throw Exception();
+        if (resCode == 200) return context.go('/otp-verification');
+        context.go('/home');
 
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Oops! Something Wrong')));
+        ).showSnackBar(SnackBar(content: Text('Login berhasil!')));
+      } catch (e) {
+        print('error: $e');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login gagal, email atau password salah!')),
+        );
       } finally {
-        if (mounted) {
-          setState(() {
-            _loading = false;
-          });
-        }
+        setState(() {
+          _loading = false;
+        });
       }
     }
   }
@@ -137,16 +124,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ],
                                 ),
                                 Positioned(
-                                  top: 0, // posisi atas
-                                  right: 0, // posisi kanan
+                                  top: 0,
+                                  right: 0,
                                   child: Container(
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
                                       color: greenColor,
-                                      borderRadius: BorderRadius.circular(
-                                        10,
-                                      ), // setengah ukuran box = bulat
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
                                 ),

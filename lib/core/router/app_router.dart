@@ -14,14 +14,13 @@ import 'package:yb_fe_take_home_test/features/home/pages/detail_page.dart';
 import 'package:yb_fe_take_home_test/features/profile/pages/profile_page.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final auth = ref.watch(authProvider);
+  final auth = ref.watch(authProvider.notifier);
 
   return GoRouter(
     initialLocation: '/login',
-    refreshListenable: auth, // listen ke auth state
     redirect: (BuildContext context, GoRouterState state) {
-      final loggedIn = auth.isLoggedIn;
-      final loggedOTP = auth.isLoggedOTP;
+      final verifiedOTP = auth.user?.isVerified ?? false;
+      final isLoggedIn = auth.user?.isLoggedIn ?? false;
       final authRoutes = [
         '/login',
         '/register',
@@ -31,14 +30,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final loggingIn = authRoutes.contains(state.matchedLocation);
 
-      // jika belum login tapi bukan login/register, redirect ke login
-      if (!loggedIn && !loggingIn) return '/login';
+      if (!isLoggedIn && !loggingIn) return '/login';
+      if (!verifiedOTP && isLoggedIn) return '/otp-verification';
+      if (verifiedOTP && isLoggedIn && loggingIn) return '/home';
 
-      // jika sudah login tapi berada di login/register, redirect ke home
-      if (loggedIn && loggingIn && !loggedOTP) return '/otp-verification';
-      if (loggedIn && loggingIn && loggedOTP) return '/home';
-
-      return null; // tidak ada redirect
+      return null;
     },
 
     routes: [

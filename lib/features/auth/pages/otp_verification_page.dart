@@ -21,24 +21,22 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
   bool _loading = false;
 
   void _verifyOTP() async {
-    final auth = ref.read(authProvider);
+    final auth = ref.read(authProvider.notifier);
 
     try {
       setState(() {
         _loading = true;
       });
-      bool success = await auth.loginOTP(_otpText);
-      if (success) {
-        print("OTP: $_otpText");
-      } else {
-        _errorText = 'Invalid OTP';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Verifikasi OTP Gagal: Kode OTP tidak valid!'),
-            backgroundColor: errorDarkColor,
-          ),
-        );
-      }
+      bool success = await auth.verifyOtp(_otpText);
+
+      if (!mounted) return;
+      if (!success) throw Exception();
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Verifikasi OTP berhasil!')));
+
+      context.go('/home');
     } catch (e) {
       print('error: $e');
       _errorText = 'Invalid OTP';

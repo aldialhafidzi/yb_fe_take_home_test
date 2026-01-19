@@ -28,17 +28,19 @@ class Validator {
 
   static String? password(String? value, {String fieldName = 'Password'}) {
     if (value == null || value.isEmpty) {
-      return '$fieldName Password is required';
+      return '$fieldName is required';
     }
 
     if (value.length < 8) {
       return '$fieldName must be at least 8 characters';
     }
 
-    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+    final hasLetter = RegExp(r'[A-Za-z]').hasMatch(value);
+    final hasNumber = RegExp(r'\d').hasMatch(value);
+    final hasSymbol = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
 
-    if (!passwordRegex.hasMatch(value)) {
-      return '$fieldName Password must contains words and numbers, special characters not allowed';
+    if (!hasLetter || !hasNumber || !hasSymbol) {
+      return '$fieldName must contain letters, numbers and symbols';
     }
 
     return null;

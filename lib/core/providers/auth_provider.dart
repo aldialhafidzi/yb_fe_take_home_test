@@ -1,44 +1,62 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
+import 'package:yb_fe_take_home_test/core/models/auth_model.dart';
 import '../models/user_model.dart';
 
-class AuthNotifier extends ChangeNotifier {
-  User? _user;
-  bool isLoggedOTP = false;
-  bool get isLoggedIn => _user != null;
-  User? get user => _user;
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  return AuthNotifier();
+});
 
-  Future<bool> login(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (email == 'test@mail.com' && password == 'a12345678') {
-      _user = User(email: email, name: 'Aldi Alhafidzi');
-      notifyListeners();
-      return true;
-    }
-    return false;
-  }
+class AuthNotifier extends StateNotifier<AuthState> {
+  AuthNotifier() : super(AuthState());
 
-  Future<bool> loginOTP(String otp) async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (otp == '1234') {
-      isLoggedOTP = true;
-      notifyListeners();
-      return true;
-    }
-    return false;
-  }
+  User? _registeredUser;
+  User? get user => _registeredUser;
 
   Future<bool> register(String name, String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
+    state = state.copyWith(isLoading: true);
+    await Future.delayed(Duration(seconds: 1));
+    _registeredUser = User(name: name, email: email, password: password, isLoggedIn: false);
+    state = state.copyWith(isLoading: false);
+
     return true;
   }
 
+  Future<int> login(String email, String password) async {
+    state = state.copyWith(isLoading: true);
+
+    await Future.delayed(Duration(seconds: 1));
+
+    if (_registeredUser == null ||
+        _registeredUser!.email != email ||
+        _registeredUser!.password != password) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Email atau password salah',
+      );
+      return 999;
+    }
+
+    _registeredUser = _registeredUser!.copyWith(isLoggedIn: true);
+    state = state.copyWith(isLoading: false, user: _registeredUser);
+
+    return _registeredUser!.isVerified ? 100 : 200;
+  }
+
+  Future<bool> verifyOtp(String otp) async {
+    state = state.copyWith(isLoading: true);
+    await Future.delayed(Duration(seconds: 1));
+
+    if (otp == '1234') {
+      _registeredUser = _registeredUser!.copyWith(isVerified: true);
+      state = state.copyWith(isLoading: false, user: _registeredUser);
+      return true;
+    }
+
+    return false;
+  }
+
   void logout() {
-    _user = null;
-    notifyListeners();
+    _registeredUser = _registeredUser!.copyWith(isLoggedIn: false);
+    state = AuthState();
   }
 }
-
-final authProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
-  return AuthNotifier();
-});

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/utils/validator.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button_variant.dart';
@@ -7,33 +8,25 @@ import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailConfirmationController =
-      TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+class _RegisterPageState extends ConsumerState<RegisterPage> {
+  final TextEditingController _emailControl = TextEditingController();
+  final TextEditingController _nameControl = TextEditingController();
+  final TextEditingController _passwordControl = TextEditingController();
+  final TextEditingController _passwordConfirmControl = TextEditingController();
 
-  final GlobalKey<TextFieldInputState> _emailKey =
-      GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _nameKey =
-      GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _emailConfirmationKey =
-      GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _passwordKey =
-      GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _confirmPasswordKey =
-      GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _emailKey = GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _nameKey = GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _passwordKey = GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _passwordConfirmKey = GlobalKey<TextFieldInputState>();
 
   bool _obscure = true;
   bool _rememberMe = false;
@@ -42,22 +35,30 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   void _register() async {
+    final auth = ref.read(authProvider.notifier);
+
     if (_formKey.currentState!.validate()) {
       try {
         setState(() {
           _loading = true;
         });
 
-        await Future.delayed(const Duration(seconds: 1));
+        bool success = await auth.register(
+          _nameControl.text.trim(),
+          _emailControl.text.trim(),
+          _passwordControl.text.trim(),
+        );
 
-        context.go('/login');
+        if (!mounted) return;
+        if (!success) throw Exception();
 
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Register berhasil!')));
+
+        context.go('/login');
       } catch (e) {
         print('error: $e');
-
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Oops! Something Wrong')));
@@ -138,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextFieldInput(
                             key: _nameKey,
                             labelText: 'Full Name',
-                            controller: _nameController,
+                            controller: _nameControl,
                             validator: (value) => Validator.minLength(value, 2),
                             requiredInput: true,
                             clearableText: true,
@@ -147,16 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextFieldInput(
                             key: _emailKey,
                             labelText: 'Email',
-                            controller: _emailController,
-                            validator: (value) => Validator.email(value),
-                            requiredInput: true,
-                            clearableText: true,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFieldInput(
-                            key: _emailConfirmationKey,
-                            labelText: 'Email Confirmation',
-                            controller: _emailConfirmationController,
+                            controller: _emailControl,
                             validator: (value) => Validator.email(value),
                             requiredInput: true,
                             clearableText: true,
@@ -165,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextFieldInput(
                             key: _passwordKey,
                             labelText: 'Password',
-                            controller: _passwordController,
+                            controller: _passwordControl,
                             validator: (value) => Validator.password(value),
                             obscureText: _obscure,
                             requiredInput: true,
@@ -187,14 +179,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           TextFieldInput(
-                            key: _confirmPasswordKey,
+                            key: _passwordConfirmKey,
                             labelText: 'Password Confirmation',
-                            controller: _confirmPasswordController,
+                            controller: _passwordConfirmControl,
                             validator: (value) => Validator.confirmPassword(
                               value,
-                              _passwordController.text,
+                              _passwordControl.text,
                             ),
                             obscureText: _obscure,
                             requiredInput: true,

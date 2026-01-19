@@ -10,7 +10,7 @@ class TextFieldInput extends StatefulWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final TextEditingController? controller;
-  final String? Function(String?)? validator; // Bisa pakai utils validator
+  final String? Function(String?)? validator;
 
   const TextFieldInput({
     super.key,
@@ -35,7 +35,28 @@ class TextFieldInputState extends State<TextFieldInput> {
   void reset() {
     setState(() {
       widget.controller?.clear();
+      errorText = null;
     });
+  }
+
+  String? validate(String? value, bool showResult) {
+    String? result;
+
+    if (widget.requiredInput && (value == null || value.isEmpty)) {
+      result = '${widget.labelText} is required';
+    }
+
+    if (result == null && widget.validator != null) {
+      result = widget.validator!(value);
+    }
+
+    if (showResult) return result;
+
+    setState(() {
+      errorText = result;
+    });
+
+    return result != null ? '' : null;
   }
 
   @override
@@ -43,7 +64,6 @@ class TextFieldInputState extends State<TextFieldInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label + asterisk
         Row(
           children: [
             if (widget.labelText != '') Text(widget.labelText),
@@ -52,31 +72,26 @@ class TextFieldInputState extends State<TextFieldInput> {
           ],
         ),
         const SizedBox(height: 4),
-        Stack(
-          clipBehavior: Clip.none,
+        Column(
           children: [
             TextFormField(
               controller: widget.controller,
               obscureText: widget.obscureText,
-              validator: (value) {
+              validator: (value) => validate(value, false),
+              onChanged: (value) {
                 String? result;
-
-                if (widget.requiredInput && (value == null || value.isEmpty)) {
-                  result = '${widget.labelText} is required';
-                }
-
-                if (result == null && widget.validator != null) {
-                  result = widget.validator!(value);
-                }
-
+                result = validate(value, true);
                 setState(() {
-                  errorText = result;
+                  errorText = result == '' ? null : result;
                 });
-
-                return result != null ? '' : null;
               },
               decoration: InputDecoration(
                 filled: true,
+                errorText: null,
+                error: null,
+                helperText: null,
+                counterText: '',
+                errorStyle: TextStyle(fontSize: 0, height: 2),
                 hintText: widget.hintText,
                 hintStyle: smallTextStyle.copyWith(color: grayscaleColor),
                 fillColor: errorText != null ? errorLightColor : whiteColor,
@@ -101,23 +116,30 @@ class TextFieldInputState extends State<TextFieldInput> {
             ),
 
             if (errorText != null)
-              Positioned(
-                bottom: -2,
-                left: 0,
-                child: Row(
-                  children: [
-                    Icon(Icons.error_outline, size: 16, color: errorDarkColor),
-                    SizedBox(width: 4),
-                    Text(
-                      errorText!,
-                      style: smallTextStyle.copyWith(color: errorDarkColor),
-                    ),
-                  ],
-                ),
+              Column(
+                children: [
+                  SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 16,
+                        color: errorDarkColor,
+                      ),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          errorText!,
+                          style: smallTextStyle.copyWith(color: errorDarkColor),
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
           ],
         ),
-        // TextFormField
       ],
     );
   }
