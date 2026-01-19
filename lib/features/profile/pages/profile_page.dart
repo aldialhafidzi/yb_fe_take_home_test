@@ -4,7 +4,7 @@ import 'package:yb_fe_take_home_test/shared/widgets/button/app_button_variant.da
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/auth_provider.dart';
+import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});

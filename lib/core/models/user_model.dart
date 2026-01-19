@@ -18,11 +18,17 @@ class User {
     return 'User(name: $name, email: $email, password: $password, isLoggedIn: $isLoggedIn, isVerified: $isVerified)';
   }
 
-  User copyWith({bool? isVerified, bool? isLoggedIn}) {
+  User copyWith({
+    bool? isVerified,
+    bool? isLoggedIn,
+    String? name,
+    String? email,
+    String? password,
+  }) {
     return User(
-      name: name,
-      email: email,
-      password: password,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
       isVerified: isVerified ?? this.isVerified,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
     );

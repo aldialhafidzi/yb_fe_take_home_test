@@ -1,45 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/utils/validator.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ResetPasswordPage extends StatefulWidget {
+class ResetPasswordPage extends ConsumerStatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  State<ResetPasswordPage> createState() => ResetPasswordPageState();
+  ConsumerState<ResetPasswordPage> createState() => ResetPasswordPageState();
 }
 
-class ResetPasswordPageState extends State<ResetPasswordPage> {
+class ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _newConfirmationPasswordController =
       TextEditingController();
 
   final GlobalKey<TextFieldInputState> _newPasswordKey =
       GlobalKey<TextFieldInputState>();
-
   final GlobalKey<TextFieldInputState> _newConfirmationPasswordKey =
       GlobalKey<TextFieldInputState>();
 
-  bool _obscureNewPassword = true;
-  bool _obscureConfirmationPassword = true;
-
   final _formKey = GlobalKey<FormState>();
 
-  void _resetPassword() {
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmationPassword = true;
+  bool _loading = false;
+
+  void _resetPassword() async {
+    final auth = ref.read(authProvider.notifier);
+
     if (_formKey.currentState!.validate()) {
-      String newPassword = _newPasswordController.text;
-      String confirmationPassword = _newConfirmationPasswordController.text;
+      setState(() {
+        _loading = true;
+      });
 
-      print("newPassword: $newPassword");
-      print("confirmationPassword: $confirmationPassword");
+      try {
+        await auth.resetPassword(_newPasswordController.text);
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Reset password berhasil!')));
+        if (!mounted) return;
+
+        context.go('/login');
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Reset password berhasil!')));
+      } catch (e) {
+        print('Error: $e');
+      } finally {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -170,6 +186,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                     child: AppButton(
                       onPressed: _resetPassword,
                       label: 'Submit',
+                      isLoading: _loading,
                     ),
                   ),
                 ),

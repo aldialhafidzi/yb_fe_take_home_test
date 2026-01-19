@@ -1,22 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/utils/validator.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
+import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  ConsumerState<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
+  final GlobalKey<TextFieldInputState> _emailKey = GlobalKey<TextFieldInputState>();
 
-  final GlobalKey<TextFieldInputState> _emailKey =
-      GlobalKey<TextFieldInputState>();
+  final _formKey = GlobalKey<FormState>();
+
+  bool _loading = false;
+
+  void _resetPassword() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _loading = true;
+      });
+
+      final auth = ref.read(authProvider.notifier);
+
+      try {
+        int resCode = await auth.forgotPassword(_emailController.text.trim());
+
+        if (!mounted) return;
+        if (resCode == 999) throw Exception();
+
+        context.go('/reset-password');
+      } catch (e) {
+        print('error: $e');
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Email tidak ditemukan!')));
+      } finally {
+        setState(() {
+          _loading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +79,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: Container(
                       constraints: BoxConstraints(maxWidth: 450),
                       child: Form(
+                        key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -101,10 +135,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 450),
                     child: AppButton(
-                      onPressed: () {
-                        context.go('/login');
-                      },
+                      onPressed: _resetPassword,
                       label: 'Submit',
+                      isLoading: _loading,
                     ),
                   ),
                 ),

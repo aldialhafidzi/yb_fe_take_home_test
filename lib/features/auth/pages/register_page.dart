@@ -28,7 +28,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final GlobalKey<TextFieldInputState> _passwordKey = GlobalKey<TextFieldInputState>();
   final GlobalKey<TextFieldInputState> _passwordConfirmKey = GlobalKey<TextFieldInputState>();
 
-  bool _obscure = true;
+  bool _obscurePassword = true;
+  bool _obscurePasswordConfirm = true;
   bool _rememberMe = false;
   bool _loading = false;
 
@@ -159,13 +160,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             labelText: 'Password',
                             controller: _passwordControl,
                             validator: (value) => Validator.password(value),
-                            obscureText: _obscure,
+                            obscureText: _obscurePassword,
                             requiredInput: true,
                             suffixIcon: IconButton(
                               focusColor: transparentColor,
                               highlightColor: transparentColor,
                               hoverColor: transparentColor,
-                              icon: _obscure
+                              icon: _obscurePassword
                                   ? SvgPicture.asset(
                                       'assets/icons/icon_eye_disabled.svg',
                                       width: 24,
@@ -174,7 +175,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   : Icon(Icons.visibility_outlined),
                               onPressed: () {
                                 setState(() {
-                                  _obscure = !_obscure;
+                                  _obscurePassword = !_obscurePassword;
                                 });
                               },
                             ),
@@ -188,13 +189,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               value,
                               _passwordControl.text,
                             ),
-                            obscureText: _obscure,
+                            obscureText: _obscurePasswordConfirm,
                             requiredInput: true,
                             suffixIcon: IconButton(
                               focusColor: transparentColor,
                               highlightColor: transparentColor,
                               hoverColor: transparentColor,
-                              icon: _obscure
+                              icon: _obscurePasswordConfirm
                                   ? SvgPicture.asset(
                                       'assets/icons/icon_eye_disabled.svg',
                                       width: 24,
@@ -203,7 +204,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   : Icon(Icons.visibility_outlined),
                               onPressed: () {
                                 setState(() {
-                                  _obscure = !_obscure;
+                                  _obscurePasswordConfirm = !_obscurePasswordConfirm;
                                 });
                               },
                             ),

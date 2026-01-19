@@ -5,7 +5,7 @@ import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/button/app_button.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/otp_field_input.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/otp_countdown.dart';
-import '../../../core/providers/auth_provider.dart';
+import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
 
 class OTPVerificationPage extends ConsumerStatefulWidget {
   const OTPVerificationPage({super.key});
