@@ -155,7 +155,7 @@ class _DetailPageState extends State<DetailPage> {
                                             ),
                                             image: DecorationImage(
                                               image: NetworkImage(
-                                                article.imageUrl,
+                                                'https://gnews-proxy-test.vercel.app/api/image?url=${article.imageUrl}',
                                               ),
                                               fit: BoxFit.cover,
                                             ),
@@ -196,7 +196,9 @@ class _DetailPageState extends State<DetailPage> {
                                     color: secondaryColor,
                                     borderRadius: BorderRadius.circular(6),
                                     image: DecorationImage(
-                                      image: NetworkImage(article.imageUrl),
+                                      image: NetworkImage(
+                                        'https://gnews-proxy-test.vercel.app/api/image?url=${article.imageUrl}',
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                   ),

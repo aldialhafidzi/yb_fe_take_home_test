@@ -41,7 +41,9 @@ class CardArticleLarge extends StatelessWidget {
                   color: secondaryColor,
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage(imageURL),
+                    image: NetworkImage(
+                      'https://gnews-proxy-test.vercel.app/api/image?url=$imageURL',
+                    ),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -89,7 +91,9 @@ class CardArticleLarge extends StatelessWidget {
                                 color: secondaryColor,
                                 borderRadius: BorderRadius.circular(10),
                                 image: DecorationImage(
-                                  image: NetworkImage(imageURL),
+                                  image: NetworkImage(
+                                    'https://gnews-proxy-test.vercel.app/api/image?url=$imageURL',
+                                  ),
                                   fit: BoxFit.cover,
                                 ),
                               ),
