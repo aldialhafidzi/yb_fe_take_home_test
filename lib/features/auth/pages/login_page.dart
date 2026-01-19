@@ -69,6 +69,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    ref.read(authProvider.notifier).initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -152,7 +158,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             key: _passwordKey,
                             labelText: 'Password',
                             controller: _passwordController,
-                            validator: (value) => Validator.password(value),
                             obscureText: _obscure,
                             requiredInput: true,
                             suffixIcon: IconButton(

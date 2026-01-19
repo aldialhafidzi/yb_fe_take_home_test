@@ -15,7 +15,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> register(String name, String email, String password) async {
     state = state.copyWith(isLoading: true);
     await Future.delayed(Duration(seconds: 1));
-    _registeredUser = User(name: name, email: email, password: password, isLoggedIn: false);
+    _registeredUser = User(
+      name: name,
+      email: email,
+      password: password,
+      isLoggedIn: false,
+    );
     state = state.copyWith(isLoading: false);
 
     return true;
@@ -58,5 +63,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void logout() {
     _registeredUser = _registeredUser!.copyWith(isLoggedIn: false);
     state = AuthState();
+  }
+
+  void initState() {
+    if (_registeredUser?.email != 'test@mail.com' && _registeredUser == null) {
+      _registeredUser = User(
+        email: 'test@mail.com',
+        password: 'a12345678',
+        name: 'Aldi Alhafidzi',
+        isLoggedIn: false,
+        isVerified: false,
+      );
+    }
   }
 }
