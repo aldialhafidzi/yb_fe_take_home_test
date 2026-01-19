@@ -33,4 +33,22 @@ class User {
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'email': email,
+    'password': password,
+    'isVerified': isVerified,
+    'isLoggedIn': isLoggedIn,
+  };
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      name: json['name'],
+      password: json['password'],
+      email: json['email'],
+      isLoggedIn: json['isLoggedIn'],
+      isVerified: json['isVerified'],
+    );
+  }
 }

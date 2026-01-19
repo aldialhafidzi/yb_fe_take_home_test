@@ -23,10 +23,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController _passwordControl = TextEditingController();
   final TextEditingController _passwordConfirmControl = TextEditingController();
 
-  final GlobalKey<TextFieldInputState> _emailKey = GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _nameKey = GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _passwordKey = GlobalKey<TextFieldInputState>();
-  final GlobalKey<TextFieldInputState> _passwordConfirmKey = GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _emailKey =
+      GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _nameKey =
+      GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _passwordKey =
+      GlobalKey<TextFieldInputState>();
+  final GlobalKey<TextFieldInputState> _passwordConfirmKey =
+      GlobalKey<TextFieldInputState>();
 
   bool _obscurePassword = true;
   bool _obscurePasswordConfirm = true;
@@ -44,14 +48,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           _loading = true;
         });
 
-        bool success = await auth.register(
-          _nameControl.text.trim(),
+        await auth.register(
           _emailControl.text.trim(),
+          _nameControl.text.trim(),
           _passwordControl.text.trim(),
         );
 
         if (!mounted) return;
-        if (!success) throw Exception();
 
         ScaffoldMessenger.of(
           context,
@@ -59,10 +62,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
         context.go('/login');
       } catch (e) {
-        print('error: $e');
+        print('[_register]: $e');
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Oops! Something Wrong')));
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       } finally {
         setState(() {
           _loading = false;
@@ -204,7 +207,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   : Icon(Icons.visibility_outlined),
                               onPressed: () {
                                 setState(() {
-                                  _obscurePasswordConfirm = !_obscurePasswordConfirm;
+                                  _obscurePasswordConfirm =
+                                      !_obscurePasswordConfirm;
                                 });
                               },
                             ),

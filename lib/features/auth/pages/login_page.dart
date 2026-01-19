@@ -41,25 +41,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final auth = ref.read(authProvider.notifier);
 
       try {
-        int resCode = await auth.login(
+        await auth.login(
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
 
         if (!mounted) return;
-        if (resCode == 999) throw Exception();
-        if (resCode == 200) return context.go('/otp-verification');
         context.go('/home');
 
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Login berhasil!')));
       } catch (e) {
-        print('error: $e');
+        print('[_login]: $e');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login gagal, email atau password salah!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       } finally {
         setState(() {
           _loading = false;

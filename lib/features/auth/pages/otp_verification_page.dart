@@ -28,10 +28,10 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
       setState(() {
         _loading = true;
       });
-      bool success = await auth.verifyOtp(_otpText);
+
+      await auth.verifyOtp(_otpText);
 
       if (!mounted) return;
-      if (!success) throw Exception();
 
       ScaffoldMessenger.of(
         context,
@@ -40,12 +40,9 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
       context.go('/home');
     } catch (e) {
       print('error: $e');
-      _errorText = 'Invalid OTP';
+      _errorText = e.toString().replaceAll('Exception: ', '');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Verifikasi OTP Gagal: Kode OTP tidak valid!'),
-          backgroundColor: errorDarkColor,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: errorDarkColor),
       );
     } finally {
       setState(() {
@@ -56,7 +53,7 @@ class _OTPVerificationPageState extends ConsumerState<OTPVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authProvider).user;
+    final user = ref.watch(authProvider).value;
 
     return Scaffold(
       appBar: CustomAppBar(),

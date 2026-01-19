@@ -32,6 +32,9 @@ class ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   bool _obscureConfirmationPassword = true;
   bool _loading = false;
 
+  late final state = GoRouterState.of(context);
+  late final email = state.uri.queryParameters['email'];
+
   void _resetPassword() async {
     final auth = ref.read(authProvider.notifier);
 
@@ -41,7 +44,7 @@ class ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
       });
 
       try {
-        await auth.resetPassword(_newPasswordController.text);
+        await auth.resetPassword(email!, _newPasswordController.text);
 
         if (!mounted) return;
 

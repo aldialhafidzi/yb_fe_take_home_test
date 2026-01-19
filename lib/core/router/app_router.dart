@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yb_fe_take_home_test/core/models/user_model.dart';
 import 'package:yb_fe_take_home_test/core/providers/auth_provider.dart';
+import 'package:yb_fe_take_home_test/core/router/router_refresh_notifier.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/login_page.dart';
 import 'package:yb_fe_take_home_test/features/auth/pages/register_page.dart';
 import 'package:yb_fe_take_home_test/features/home/pages/home_page.dart';
@@ -14,13 +16,21 @@ import 'package:yb_fe_take_home_test/features/home/pages/detail_page.dart';
 import 'package:yb_fe_take_home_test/features/profile/pages/profile_page.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final auth = ref.watch(authProvider.notifier);
+  final refreshNotifier = RouterRefreshNotifier();
 
-  return GoRouter(
+  ref.listen<AsyncValue<User?>>(
+    authProvider,
+    (_, __) => refreshNotifier.refresh(),
+  );
+
+  final router = GoRouter(
     initialLocation: '/login',
+    refreshListenable: refreshNotifier,
     redirect: (BuildContext context, GoRouterState state) {
-      final verifiedOTP = auth.user?.isVerified ?? false;
-      final isLoggedIn = auth.user?.isLoggedIn ?? false;
+      final auth = ref.read(authProvider).value;
+
+      final verifiedOTP = auth?.isVerified ?? false;
+      final isLoggedIn = auth?.isLoggedIn ?? false;
       final authRoutes = [
         '/login',
         '/register',
@@ -31,8 +41,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final loggingIn = authRoutes.contains(state.matchedLocation);
 
       if (!isLoggedIn && !loggingIn) return '/login';
-      if (!verifiedOTP && isLoggedIn) return '/otp-verification';
-      if (verifiedOTP && isLoggedIn && loggingIn) return '/home';
+
+      if (auth != null) {
+        if (!verifiedOTP && isLoggedIn) return '/otp-verification';
+        if (verifiedOTP && isLoggedIn && loggingIn) return '/home';
+      }
 
       return null;
     },
@@ -80,4 +93,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.onDispose(router.dispose);
+  return router;
 });

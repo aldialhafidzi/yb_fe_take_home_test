@@ -33,19 +33,33 @@ class _CategoryPageState extends State<CategoryPage> {
         backgroundColor: whiteColor,
         surfaceTintColor: whiteColor,
         shadowColor: whiteColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go('/home');
-          },
+        elevation: 0,
+        title: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    context.go('/home');
+                  },
+                  icon: Icon(Icons.arrow_back),
+                ),
+                Spacer(),
+                Text(
+                  widget.category[0].toUpperCase() +
+                      widget.category.substring(1),
+                  style: linkMediumTextStyle,
+                ),
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.more_vert_outlined),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
         ),
-        title: Text(
-          widget.category[0].toUpperCase() + widget.category.substring(1),
-          style: linkMediumTextStyle,
-        ),
-        actions: [
-          IconButton(icon: Icon(Icons.more_vert_outlined), onPressed: () {}),
-        ],
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(

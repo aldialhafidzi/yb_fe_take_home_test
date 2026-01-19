@@ -23,7 +23,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
+    final user = ref.watch(authProvider).value;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -58,7 +59,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: Text(
-                                    auth.user?.name ?? '',
+                                    user?.name ?? '',
                                     style: largeBoldTextStyle.copyWith(
                                       color: primaryDefaultColor,
                                     ),

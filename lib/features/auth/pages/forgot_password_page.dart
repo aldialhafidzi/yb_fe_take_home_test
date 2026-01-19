@@ -31,20 +31,20 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       });
 
       final auth = ref.read(authProvider.notifier);
+      final email = _emailController.text.trim();
 
       try {
-        int resCode = await auth.forgotPassword(_emailController.text.trim());
+        await auth.forgotPassword(email);
 
         if (!mounted) return;
-        if (resCode == 999) throw Exception();
 
-        context.go('/reset-password');
+        context.go('/reset-password?email=$email');
       } catch (e) {
-        print('error: $e');
+        print('[_forgotPassword]: $e');
 
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Email tidak ditemukan!')));
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       } finally {
         setState(() {
           _loading = false;
