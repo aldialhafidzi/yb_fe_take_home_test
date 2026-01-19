@@ -52,9 +52,9 @@ class _HomePageState extends State<HomePage> {
       });
 
       if (value != '') {
-        trendingArticles = newsService.fetchArticles(value, '1');
+        trendingArticles = newsService.fetchArticles(value, 1, 1);
       } else {
-        trendingArticles = newsService.fetchArticles('Bali', '1');
+        trendingArticles = newsService.fetchArticles('Bali', 1, 1);
       }
     });
   }
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    trendingArticles = newsService.fetchArticles('Bali', '1');
+    trendingArticles = newsService.fetchArticles('Bali', 1, 1);
     latestArticles = newsService.fetchTopArticles(selectedCategory);
   }
 

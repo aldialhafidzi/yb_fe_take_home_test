@@ -6,8 +6,8 @@ import '../models/article.dart';
 class ArticlesServices {
   static const String baseUrl = 'https://gnews-proxy-test.vercel.app/api';
 
-  Future<List<Article>> fetchArticles(String query, String max) async {
-    final url = Uri.parse('$baseUrl/search?max=$max&q=$query');
+  Future<List<Article>> fetchArticles(String query, int max, int? page) async {
+    final url = Uri.parse('$baseUrl/search?page=$page&max=$max&q=$query');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

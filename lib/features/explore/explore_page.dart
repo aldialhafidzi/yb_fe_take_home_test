@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/models/article.dart';
 import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
@@ -19,8 +17,10 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> {
   final ArticlesServices newsService = ArticlesServices();
+  final ScrollController _scrollController = ScrollController();
 
   late Future<List<Article>> latestArticles;
+  List<Article> articles = [];
 
   String selectedCategory = 'general';
 
@@ -38,6 +38,11 @@ class _ExplorePageState extends State<ExplorePage> {
 
   final TextEditingController _searchController = TextEditingController();
 
+  int page = 1;
+  bool isLoading = false;
+  bool isError = false;
+  bool hasMore = true;
+
   // ignore: unused_field
   String? _keyword = '';
   Timer? _debounce;
@@ -51,10 +56,63 @@ class _ExplorePageState extends State<ExplorePage> {
       });
 
       if (value != '') {
-        latestArticles = newsService.fetchArticles(value, '11');
+        latestArticles = newsService.fetchArticles(value, 11, page);
       } else {
-        latestArticles = newsService.fetchArticles('Bali', '11');
+        latestArticles = newsService.fetchArticles('Bali', 11, page);
       }
+    });
+  }
+
+  void _onScroll() {
+    print(
+      '_scrollController.position.pixels ${_scrollController.position.pixels}',
+    );
+    print(
+      '_scrollController.position.maxScrollExtent ${_scrollController.position.maxScrollExtent}',
+    );
+
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !isLoading &&
+        hasMore) {
+      _fetchMore();
+    }
+  }
+
+  Future<void> _fetchInitial() async {
+    setState(() => isLoading = true);
+
+    try {
+      final result = await newsService.fetchArticles('Bali', 11, page);
+      setState(() {
+        articles = result;
+        page++;
+        hasMore = result.isNotEmpty;
+        isError = false;
+      });
+    } catch (e) {
+      print('[_fetchInitial]: ${e.toString()}');
+      setState(() {
+        isError = true;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchMore() async {
+    setState(() => isLoading = true);
+
+    final result = await newsService.fetchArticles('Bali', 11, page);
+
+    setState(() {
+      articles.addAll(result);
+      page++;
+      isLoading = false;
+
+      if (result.isEmpty) hasMore = false;
     });
   }
 
@@ -68,7 +126,8 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void initState() {
     super.initState();
-    latestArticles = newsService.fetchArticles('Bali', '11');
+    _fetchInitial();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -77,7 +136,7 @@ class _ExplorePageState extends State<ExplorePage> {
       body: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
+            minHeight: MediaQuery.of(context).size.height - 100,
           ),
           child: IntrinsicHeight(
             child: Center(
@@ -125,87 +184,55 @@ class _ExplorePageState extends State<ExplorePage> {
                       children: [Text('Explore', style: linkMediumTextStyle)],
                     ),
                     SizedBox(height: 16),
-                    FutureBuilder<List<Article>>(
-                      future: latestArticles,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        } else if (snapshot.hasError) {
-                          return SizedBox(
-                            height: 250,
-                            child: Center(
-                              child: Text('Error: ${snapshot.error}'),
+                    SizedBox(
+                      height: 450,
+                      child: ListView(
+                        controller: _scrollController,
+                        children: [
+                          if (articles.isNotEmpty)
+                            CardArticleLarge(
+                              title: articles[0].title,
+                              description: articles[0].description,
+                              subtitle: 'General',
+                              source: articles[0].sourceName,
+                              imageURL: articles[0].imageUrl,
+                              date: articles[0].publishedAt,
                             ),
-                          );
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: Text('No articles found')),
-                          );
-                        }
-
-                        final article = snapshot.data![0];
-
-                        return SizedBox(
-                          child: CardArticleLarge(
-                            title: article.title,
-                            description: article.description,
-                            subtitle: 'General',
-                            source: article.sourceName,
-                            imageURL: article.imageUrl,
-                            date: article.publishedAt,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    FutureBuilder<List<Article>>(
-                      future: latestArticles,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        } else if (snapshot.hasError) {
-                          return SizedBox(
-                            height: 250,
-                            child: Center(
-                              child: Text('Error: ${snapshot.error}'),
-                            ),
-                          );
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: Text('No articles found')),
-                          );
-                        }
-
-                        final articles = snapshot.data!;
-                        return Column(
-                          children: articles.skip(1).map((article) {
+                          SizedBox(height: 16),
+                          ...articles.skip(1).map((article) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
+                              padding: const EdgeInsets.only(bottom: 16),
                               child: CardArticleSmall(
                                 title: article.title,
-                                subtitle:
-                                    selectedCategory[0].toUpperCase() +
-                                    selectedCategory.substring(1),
+                                subtitle: selectedCategory,
                                 source: article.sourceName,
                                 imageURL: article.imageUrl,
                                 date: article.publishedAt,
                               ),
                             );
-                          }).toList(),
-                        );
-                      },
+                          }),
+
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+
+                          if (isError)
+                            SizedBox(
+                              height: 250,
+                              child: Center(
+                                child: Text('Error: Failed to fetch articles'),
+                              ),
+                            ),
+
+                          if (!hasMore)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Text('No more articles'),
+                            ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -67,7 +67,8 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     detailArticles = newsService.fetchArticles(
       widget.title.split(' ').take(2).join(' '),
-      '1',
+      1,
+      1,
     );
   }
 
