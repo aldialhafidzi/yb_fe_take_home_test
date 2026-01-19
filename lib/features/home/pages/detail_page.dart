@@ -78,31 +78,43 @@ class _DetailPageState extends State<DetailPage> {
         backgroundColor: whiteColor,
         surfaceTintColor: whiteColor,
         shadowColor: whiteColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go('/home');
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.share_outlined),
-            onPressed: () async {
-              try {
-                List<Article> articles =
-                    await detailArticles; // tunggu Future selesai
-                for (var article in articles) {
-                  String title = article.title;
-                  String url = article.url;
-                  shareToWhatsApp('$title: $url');
-                }
-              } catch (e) {
-                print('Error: $e');
-              }
-            },
+        elevation: 0,
+        title: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    context.go('/login');
+                  },
+                  icon: Icon(Icons.arrow_back),
+                ),
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.share_outlined),
+                  onPressed: () async {
+                    try {
+                      List<Article> articles =
+                          await detailArticles; // tunggu Future selesai
+                      for (var article in articles) {
+                        String title = article.title;
+                        String url = article.url;
+                        shareToWhatsApp('$title: $url');
+                      }
+                    } catch (e) {
+                      print('Error: $e');
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.more_vert_outlined),
+                  onPressed: () {},
+                ),
+              ],
+            ),
           ),
-          IconButton(icon: Icon(Icons.more_vert_outlined), onPressed: () {}),
-        ],
+        ),
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(

@@ -17,15 +17,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           constraints: const BoxConstraints(maxWidth: 450),
           child: Row(
             children: [
-              InkWell(
-                focusColor: transparentColor,
-                splashColor: transparentColor,
-                hoverColor: transparentColor,
-                highlightColor: transparentColor,
-                onTap: () {
+              IconButton(
+                onPressed: () {
                   context.go('/login');
                 },
-                child: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
               ),
             ],
           ),
