@@ -8,6 +8,9 @@ Widget buildMenuItem(
   String url,
   BuildContext context,
 ) {
+  final currentPath = GoRouter.of(context).state.matchedLocation;
+  final bool isActive = currentPath == url;
+
   return InkWell(
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
@@ -19,9 +22,18 @@ Widget buildMenuItem(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 24),
+        Icon(
+          icon,
+          size: 24,
+          color: isActive ? primaryDefaultColor : grayscaleBodyTextColor,
+        ),
         SizedBox(height: 4),
-        Text(label, style: smallTextStyle),
+        Text(
+          label,
+          style: smallTextStyle.copyWith(
+            color: isActive ? primaryDefaultColor : grayscaleBodyTextColor,
+          ),
+        ),
       ],
     ),
   );

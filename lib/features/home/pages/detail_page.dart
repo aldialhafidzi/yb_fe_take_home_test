@@ -60,9 +60,16 @@ class DetailPage extends ConsumerStatefulWidget {
 }
 
 class _DetailPageState extends ConsumerState<DetailPage> {
+  late List<Article> bookmarks;
+
+  void initBookmarks() async {
+    bookmarks = await BookmarkService.getBookmarks();
+  }
+
   @override
   void initState() {
     super.initState();
+    initBookmarks();
   }
 
   @override
@@ -77,6 +84,12 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       page: 1,
     );
     final results = ref.watch(homeArticlesProvider(query));
+
+    final currentArticle = results.articles[0];
+
+    bool _isBookmarked = bookmarks.any(
+      (article) => article.url == currentArticle.url,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -315,27 +328,49 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                   onTap: () async {
                     try {
                       final safeArticle = Article(
-                        title: results.articles[0].title,
-                        description: results.articles[0].description,
-                        sourceName: results.articles[0].sourceName,
-                        image: results.articles[0].image,
-                        publishedAt: results.articles[0].publishedAt,
-                        url: results.articles[0].url,
-                        imageUrl: results.articles[0].imageUrl,
-                        content: results.articles[0].content,
+                        title: currentArticle.title,
+                        description: currentArticle.description,
+                        sourceName: currentArticle.sourceName,
+                        image: currentArticle.image,
+                        publishedAt: currentArticle.publishedAt,
+                        url: currentArticle.url,
+                        imageUrl: currentArticle.imageUrl,
+                        content: currentArticle.content,
                       );
 
-                      await BookmarkService.addBookmark(safeArticle);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('1 article bookmarked!')),
-                      );
+                      if (_isBookmarked) {
+                        await BookmarkService.removeBookmark(safeArticle);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('1 article removed from bookmark!'),
+                          ),
+                        );
+                      } else {
+                        await BookmarkService.addBookmark(safeArticle);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('1 article bookmarked!')),
+                        );
+                      }
+
+                      setState(() {
+                        _isBookmarked = !_isBookmarked;
+                      });
+
+                      bookmarks = await BookmarkService.getBookmarks();
                     } catch (e) {
                       print('Error: $e');
                     }
                   },
                   child: Row(
                     children: [
-                      Icon(Icons.bookmark, color: primaryDefaultColor),
+                      Icon(
+                        _isBookmarked
+                            ? Icons.bookmark
+                            : Icons.bookmark_add_outlined,
+                        color: _isBookmarked
+                            ? primaryDefaultColor
+                            : grayscaleBodyTextColor,
+                      ),
                     ],
                   ),
                 ),
