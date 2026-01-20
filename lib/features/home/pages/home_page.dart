@@ -55,10 +55,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final query = ArticleQuery(q: _keyword);
+    final queryLatest = ArticleQuery(q: _keyword);
     final queryTop = ArticleQuery(category: selectedCategory);
 
-    final latest = ref.watch(homeArticlesProvider(query));
+    final latest = ref.watch(homeArticlesProvider(queryLatest));
     final top = ref.watch(homeTopArticlesProvider(queryTop));
 
     return Scaffold(

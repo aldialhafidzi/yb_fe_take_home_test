@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
-import 'package:yb_fe_take_home_test/shared/models/article.dart';
-import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
+import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_large.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/custom_buttom_app_bar.dart';
+import 'package:yb_fe_take_home_test/features/home/provider/home_articles_provider.dart';
 
-class CategoryPage extends StatefulWidget {
+class CategoryPage extends ConsumerStatefulWidget {
   final String category;
 
   const CategoryPage({super.key, required this.category});
 
   @override
-  State<CategoryPage> createState() => _CategoryPageState();
+  ConsumerState<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
-  final ArticlesServices newsService = ArticlesServices();
-
-  late Future<List<Article>> latestArticles;
-
+class _CategoryPageState extends ConsumerState<CategoryPage> {
   @override
   void initState() {
     super.initState();
-    latestArticles = newsService.fetchTopArticles(widget.category);
   }
 
   @override
   Widget build(BuildContext context) {
+    final queryTop = ArticleQuery(category: widget.category);
+    final top = ref.watch(homeTopArticlesProvider(queryTop));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: whiteColor,
@@ -71,36 +70,41 @@ class _CategoryPageState extends State<CategoryPage> {
               child: Container(
                 constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: FutureBuilder<List<Article>>(
-                  future: latestArticles,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No articles found'));
-                    }
-
-                    final articles = snapshot.data!;
-                    return Column(
-                      children: articles.map((article) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: CardArticleLarge(
-                            title: article.title,
-                            description: article.description,
-                            subtitle:
-                                widget.category[0].toUpperCase() +
-                                widget.category.substring(1),
-                            source: article.sourceName,
-                            imageURL: article.imageUrl,
-                            date: article.publishedAt,
+                child: Column(
+                  children: [
+                    ...top.articles
+                        .skip(1)
+                        .map(
+                          (article) => Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: CardArticleLarge(
+                              title: article.title,
+                              subtitle: 'General',
+                              source: article.sourceName,
+                              imageURL: article.imageUrl,
+                              date: article.publishedAt,
+                            ),
                           ),
-                        );
-                      }).toList(),
-                    );
-                  },
+                        ),
+                    if (top.isLoading)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+
+                    // if (top.isError)
+                    //   SizedBox(
+                    //     height: 250,
+                    //     child: Center(
+                    //       child: Text('Error: Failed to fetch articles'),
+                    //     ),
+                    //   ),
+                    if (!top.hasMore)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: Text('No articles found')),
+                      ),
+                  ],
                 ),
               ),
             ),

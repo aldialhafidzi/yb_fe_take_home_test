@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/models/article.dart';
+import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
 import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
 import 'package:yb_fe_take_home_test/shared/services/bookmark_services.dart';
 import 'package:yb_fe_take_home_test/shared/utils/formater.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yb_fe_take_home_test/features/home/provider/home_articles_provider.dart';
 
 Future<void> openUrl(String url) async {
   final Uri uri = Uri.parse(url);
@@ -48,16 +51,16 @@ Widget buildMenuItem(
   );
 }
 
-class DetailPage extends StatefulWidget {
+class DetailPage extends ConsumerStatefulWidget {
   final String title;
 
   const DetailPage({super.key, required this.title});
 
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  ConsumerState<DetailPage> createState() => _DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
+class _DetailPageState extends ConsumerState<DetailPage> {
   final ArticlesServices newsService = ArticlesServices();
 
   late Future<List<Article>> detailArticles;
@@ -65,15 +68,17 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
-    detailArticles = newsService.fetchArticles(
-      widget.title.split(' ').take(2).join(' '),
-      1,
-      1,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final query = ArticleQuery(
+      q: widget.title.split(' ').take(2).join(' '),
+      limit: 1,
+      page: 1,
+    );
+    final results = ref.watch(homeArticlesProvider(query));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: whiteColor,
@@ -96,13 +101,9 @@ class _DetailPageState extends State<DetailPage> {
                   icon: Icon(Icons.share_outlined),
                   onPressed: () async {
                     try {
-                      List<Article> articles =
-                          await detailArticles; // tunggu Future selesai
-                      for (var article in articles) {
-                        String title = article.title;
-                        String url = article.url;
-                        shareToWhatsApp('$title: $url');
-                      }
+                      String title = results.articles[0].title;
+                      String url = results.articles[0].url;
+                      shareToWhatsApp('$title: $url');
                     } catch (e) {
                       print('Error: $e');
                     }
@@ -127,127 +128,132 @@ class _DetailPageState extends State<DetailPage> {
               child: Container(
                 constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: FutureBuilder<List<Article>>(
-                  future: detailArticles,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No articles found'));
-                    }
-
-                    final article = snapshot.data![0];
-                    return Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  openUrl(article.url);
-                                  print(article.url);
-                                },
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: AspectRatio(
-                                        aspectRatio: 1,
-                                        child: Container(
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: secondaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                              50,
+                child: Column(
+                  children: [
+                    if (results.articles.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                openUrl(results.articles[0].url);
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: secondaryColor,
+                                          borderRadius: BorderRadius.circular(
+                                            50,
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              'https://gnews-proxy-test.vercel.app/api/image?url=${results.articles[0].imageUrl}',
                                             ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                'https://gnews-proxy-test.vercel.app/api/image?url=${article.imageUrl}',
-                                              ),
-                                              fit: BoxFit.cover,
-                                            ),
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 4),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            article.sourceName,
-                                            style: linkMediumTextStyle,
-                                            maxLines: 1,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          results.articles[0].sourceName,
+                                          style: linkMediumTextStyle,
+                                          maxLines: 1,
+                                        ),
+                                        Text(
+                                          FormaterUtils.timeAgo(
+                                            results.articles[0].publishedAt,
                                           ),
-                                          Text(
-                                            FormaterUtils.timeAgo(
-                                              article.publishedAt,
-                                            ),
-                                            style: smallTextStyle,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              AspectRatio(
-                                aspectRatio: 1.5,
-                                child: Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: secondaryColor,
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        'https://gnews-proxy-test.vercel.app/api/image?url=${article.imageUrl}',
-                                      ),
-                                      fit: BoxFit.cover,
+                                          style: smallTextStyle,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                              SizedBox(height: 8),
-                              SizedBox(
+                            ),
+                            SizedBox(height: 16),
+                            AspectRatio(
+                              aspectRatio: 1.5,
+                              child: Container(
                                 width: double.infinity,
-                                child: Text('Travel', style: xSmallTextStyle),
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  article.title,
-                                  style: mediumTextStyle.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 24,
+                                height: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: secondaryColor,
+                                  borderRadius: BorderRadius.circular(6),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      'https://gnews-proxy-test.vercel.app/api/image?url=${results.articles[0].imageUrl}',
+                                    ),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  article.content,
-                                  style: mediumTextStyle.copyWith(
-                                    color: grayscaleBodyTextColor,
-                                  ),
+                            ),
+                            SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Text('Travel', style: xSmallTextStyle),
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Text(
+                                results.articles[0].title,
+                                style: mediumTextStyle.copyWith(
+                                  color: Colors.black,
+                                  fontSize: 24,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Text(
+                                results.articles[0].content,
+                                style: mediumTextStyle.copyWith(
+                                  color: grayscaleBodyTextColor,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-                  },
+                      ),
+
+                    if (results.isLoading)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+
+                    // if (results.isError)
+                    //   SizedBox(
+                    //     height: 250,
+                    //     child: Center(
+                    //       child: Text('Error: Failed to fetch articles'),
+                    //     ),
+                    //   ),
+                    if (!results.hasMore)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: Text('No articles found')),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -308,25 +314,21 @@ class _DetailPageState extends State<DetailPage> {
                 InkWell(
                   onTap: () async {
                     try {
-                      List<Article> articles = await detailArticles;
-                      for (var article in articles) {
-                        // pastikan semua field bukan null
-                        final safeArticle = Article(
-                          title: article.title,
-                          description: article.description,
-                          sourceName: article.sourceName,
-                          image: article.image,
-                          publishedAt: article.publishedAt,
-                          url: article.url,
-                          imageUrl: article.imageUrl,
-                          content: article.content,
-                        );
-                        await BookmarkService.addBookmark(safeArticle);
-                      }
+                      final safeArticle = Article(
+                        title: results.articles[0].title,
+                        description: results.articles[0].description,
+                        sourceName: results.articles[0].sourceName,
+                        image: results.articles[0].image,
+                        publishedAt: results.articles[0].publishedAt,
+                        url: results.articles[0].url,
+                        imageUrl: results.articles[0].imageUrl,
+                        content: results.articles[0].content,
+                      );
+                      await BookmarkService.addBookmark(safeArticle);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            '${articles.length} article(s) bookmarked!',
+                            '${results.articles.length} article(s) bookmarked!',
                           ),
                         ),
                       );
