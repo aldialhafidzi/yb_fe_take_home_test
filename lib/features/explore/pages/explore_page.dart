@@ -38,13 +38,6 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
   }
 
   @override
-  void dispose() {
-    _debounce?.cancel();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
 
@@ -54,10 +47,21 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
       );
 
       if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
-        notifier.loadMore();
+          _scrollController.position.maxScrollExtent) {
+        _debounce?.cancel();
+
+        _debounce = Timer(const Duration(milliseconds: 500), () {
+          notifier.loadMore();
+        });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,15 +70,13 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
     final state = ref.watch(exploreArticlesProvider(query));
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height - 100,
-          ),
-          child: IntrinsicHeight(
-            child: Center(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 450),
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 450),
+          child: ListView(
+            controller: _scrollController,
+            children: [
+              Container(
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   children: [
@@ -118,9 +120,7 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                     ),
                     SizedBox(height: 16),
                     SizedBox(
-                      height: 450,
-                      child: ListView(
-                        controller: _scrollController,
+                      child: Column(
                         children: [
                           if (state.articles.isNotEmpty)
                             CardArticleLarge(
@@ -153,14 +153,14 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                               child: Center(child: CircularProgressIndicator()),
                             ),
 
-                          // if (state.isError)
-                          //   SizedBox(
-                          //     height: 250,
-                          //     child: Center(
-                          //       child: Text('Error: Failed to fetch articles'),
-                          //     ),
-                          //   ),
-                          
+                          if (state.isError)
+                            SizedBox(
+                              height: 250,
+                              child: Center(
+                                child: Text('Error: Failed to fetch articles'),
+                              ),
+                            ),
+
                           if (!state.hasMore)
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 16),
@@ -172,7 +172,7 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/models/article.dart';
-import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
 import 'package:yb_fe_take_home_test/shared/services/bookmark_services.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_small.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
@@ -40,8 +39,6 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
-  final ArticlesServices newsService = ArticlesServices();
-
   String selectedCategory = 'general';
 
   late Future<List<Article>> bookmarks;

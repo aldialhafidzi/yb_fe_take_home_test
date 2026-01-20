@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +18,8 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+
   String selectedCategory = 'general';
 
   final List<Map<String, String>> categories = [
@@ -47,9 +48,31 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      final notifier = ref.read(
+        homeTopArticlesProvider(
+          ArticleQuery(category: selectedCategory),
+        ).notifier,
+      );
+
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent) {
+        _debounce = Timer(const Duration(milliseconds: 500), () {
+          _debounce?.cancel();
+          notifier.loadMore();
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -62,14 +85,13 @@ class _HomePageState extends ConsumerState<HomePage> {
     final top = ref.watch(homeTopArticlesProvider(queryTop));
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: IntrinsicHeight(
-            child: Center(
-              child: Container(
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 450),
+          child: ListView(
+            controller: _scrollController,
+            children: [
+              Container(
                 constraints: BoxConstraints(maxWidth: 450),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
@@ -135,6 +157,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                         source: latest.articles[0].sourceName,
                         imageURL: latest.articles[0].imageUrl,
                         date: latest.articles[0].publishedAt,
+                      ),
+                    if (latest.isLoading)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+
+                    if (latest.isError)
+                      SizedBox(
+                        height: 250,
+                        child: Center(
+                          child: Text('Error: Failed to fetch articles'),
+                        ),
+                      ),
+
+                    if (!latest.hasMore)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: Text('No articles found')),
                       ),
                     SizedBox(height: 16),
                     Row(
@@ -234,13 +275,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                         child: Center(child: CircularProgressIndicator()),
                       ),
 
-                    // if (top.isError)
-                    //   SizedBox(
-                    //     height: 250,
-                    //     child: Center(
-                    //       child: Text('Error: Failed to fetch articles'),
-                    //     ),
-                    //   ),
+                    if (top.isError)
+                      SizedBox(
+                        height: 250,
+                        child: Center(
+                          child: Text('Error: Failed to fetch articles'),
+                        ),
+                      ),
+
                     if (!top.hasMore)
                       const SizedBox(
                         height: 250,
@@ -249,7 +291,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

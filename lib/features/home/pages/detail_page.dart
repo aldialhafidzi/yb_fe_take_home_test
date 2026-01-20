@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
 import 'package:yb_fe_take_home_test/shared/models/article.dart';
 import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
-import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
 import 'package:yb_fe_take_home_test/shared/services/bookmark_services.dart';
 import 'package:yb_fe_take_home_test/shared/utils/formater.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -61,10 +60,6 @@ class DetailPage extends ConsumerStatefulWidget {
 }
 
 class _DetailPageState extends ConsumerState<DetailPage> {
-  final ArticlesServices newsService = ArticlesServices();
-
-  late Future<List<Article>> detailArticles;
-
   @override
   void initState() {
     super.initState();
@@ -73,7 +68,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final query = ArticleQuery(
-      q: widget.title.split(' ').take(2).join(' '),
+      q: widget.title
+          .split(' ')
+          .take(2)
+          .join(' ')
+          .replaceAll(RegExp(r'[^a-zA-Z0-9 ]'), ''),
       limit: 1,
       page: 1,
     );
@@ -241,13 +240,14 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                         child: Center(child: CircularProgressIndicator()),
                       ),
 
-                    // if (results.isError)
-                    //   SizedBox(
-                    //     height: 250,
-                    //     child: Center(
-                    //       child: Text('Error: Failed to fetch articles'),
-                    //     ),
-                    //   ),
+                    if (results.isError)
+                      SizedBox(
+                        height: 250,
+                        child: Center(
+                          child: Text('Error: Failed to fetch articles'),
+                        ),
+                      ),
+
                     if (!results.hasMore)
                       const SizedBox(
                         height: 250,
@@ -324,13 +324,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                         imageUrl: results.articles[0].imageUrl,
                         content: results.articles[0].content,
                       );
+
                       await BookmarkService.addBookmark(safeArticle);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${results.articles.length} article(s) bookmarked!',
-                          ),
-                        ),
+                        SnackBar(content: Text('1 article bookmarked!')),
                       );
                     } catch (e) {
                       print('Error: $e');

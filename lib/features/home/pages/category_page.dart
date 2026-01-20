@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +18,37 @@ class CategoryPage extends ConsumerStatefulWidget {
 }
 
 class _CategoryPageState extends ConsumerState<CategoryPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
+
+    _scrollController.addListener(() {
+      final notifier = ref.read(
+        homeTopArticlesProvider(
+          ArticleQuery(category: widget.category),
+        ).notifier,
+      );
+
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent) {
+        _debounce = Timer(const Duration(milliseconds: 500), () {
+          _debounce?.cancel();
+
+          notifier.loadMore();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,15 +89,13 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: IntrinsicHeight(
-            child: Center(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 450),
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 450),
+          child: ListView(
+            controller: _scrollController,
+            children: [
+              Container(
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   children: [
@@ -92,13 +119,14 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
                         child: Center(child: CircularProgressIndicator()),
                       ),
 
-                    // if (top.isError)
-                    //   SizedBox(
-                    //     height: 250,
-                    //     child: Center(
-                    //       child: Text('Error: Failed to fetch articles'),
-                    //     ),
-                    //   ),
+                    if (top.isError)
+                      SizedBox(
+                        height: 250,
+                        child: Center(
+                          child: Text('Error: Failed to fetch articles'),
+                        ),
+                      ),
+
                     if (!top.hasMore)
                       const SizedBox(
                         height: 250,
@@ -107,7 +135,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

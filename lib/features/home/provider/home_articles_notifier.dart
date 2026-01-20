@@ -13,15 +13,21 @@ class HomeArticlesNotifier extends StateNotifier<HomeArticlesState> {
   final ArticleQuery query;
 
   Future<void> fetchInitial() async {
-    state = state.copyWith(isLoading: true);
+    try {
+      state = state.copyWith(isLoading: true);
 
-    final result = await repo.getArticles(query, page: 1);
+      final result = await repo.getArticles(query, page: 1);
 
-    state = state.copyWith(
-      articles: result,
-      page: 2,
-      hasMore: result.isNotEmpty,
-      isLoading: false,
-    );
+      state = state.copyWith(
+        articles: result,
+        page: 2,
+        hasMore: result.isNotEmpty,
+        isError: false,
+      );
+    } catch (e) {
+      state = state.copyWith(isError: true);
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 }
