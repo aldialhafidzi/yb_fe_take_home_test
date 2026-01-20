@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
-import 'package:yb_fe_take_home_test/shared/models/explore_articles_state.dart';
+import 'package:yb_fe_take_home_test/features/explore/states/explore_articles_state.dart';
 import 'package:yb_fe_take_home_test/shared/repositories/article_repository.dart';
 
 class ExploreArticlesNotifier extends StateNotifier<ExploreArticlesState> {

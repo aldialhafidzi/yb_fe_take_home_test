@@ -1,28 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
-import 'package:yb_fe_take_home_test/shared/models/article.dart';
-import 'package:yb_fe_take_home_test/shared/services/articles_services.dart';
+import 'package:yb_fe_take_home_test/features/home/provider/home_articles_provider.dart';
+import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_large.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_small.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/custom_buttom_app_bar.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/text_field_input.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final ArticlesServices newsService = ArticlesServices();
-
-  late Future<List<Article>> trendingArticles;
-  late Future<List<Article>> latestArticles;
-
+class _HomePageState extends ConsumerState<HomePage> {
   String selectedCategory = 'general';
 
   final List<Map<String, String>> categories = [
@@ -37,25 +33,16 @@ class _HomePageState extends State<HomePage> {
     {'title': 'Health', 'category': 'health'},
   ];
 
-  final TextEditingController _searchController = TextEditingController();
-
-  // ignore: unused_field
-  String? _keyword = '';
   Timer? _debounce;
+  String _keyword = 'Indonesia';
+
+  final TextEditingController _searchController = TextEditingController();
 
   void _onSearchChanged(String value) {
     _debounce?.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-        _keyword = value;
-      });
-
-      if (value != '') {
-        trendingArticles = newsService.fetchArticles(value, 1, 1);
-      } else {
-        trendingArticles = newsService.fetchArticles('Bali', 1, 1);
-      }
+      setState(() => _keyword = value.isEmpty ? 'Indonesia' : value);
     });
   }
 
@@ -67,14 +54,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    trendingArticles = newsService.fetchArticles('Bali', 1, 1);
-    latestArticles = newsService.fetchTopArticles(selectedCategory);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final query = ArticleQuery(q: _keyword);
+    final queryTop = ArticleQuery(category: selectedCategory);
+
+    final latest = ref.watch(homeArticlesProvider(query));
+    final top = ref.watch(homeTopArticlesProvider(queryTop));
+
     return Scaffold(
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -141,44 +127,15 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     SizedBox(height: 16),
-                    FutureBuilder<List<Article>>(
-                      future: trendingArticles,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        } else if (snapshot.hasError) {
-                          return SizedBox(
-                            height: 250,
-                            child: Center(
-                              child: Text('Error: ${snapshot.error}'),
-                            ),
-                          );
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: Text('No articles found')),
-                          );
-                        }
-
-                        final article = snapshot.data![0];
-
-                        return SizedBox(
-                          child: CardArticleLarge(
-                            title: article.title,
-                            description: article.description,
-                            subtitle: 'General',
-                            source: article.sourceName,
-                            imageURL: article.imageUrl,
-                            date: article.publishedAt,
-                          ),
-                        );
-                      },
-                    ),
+                    if (latest.articles.isNotEmpty)
+                      CardArticleLarge(
+                        title: latest.articles[0].title,
+                        description: latest.articles[0].description,
+                        subtitle: 'General',
+                        source: latest.articles[0].sourceName,
+                        imageURL: latest.articles[0].imageUrl,
+                        date: latest.articles[0].publishedAt,
+                      ),
                     SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,8 +202,6 @@ class _HomePageState extends State<HomePage> {
                                     onTap: () {
                                       setState(() {
                                         selectedCategory = cat['category']!;
-                                        latestArticles = newsService
-                                            .fetchTopArticles(selectedCategory);
                                       });
                                     },
                                   ),
@@ -257,49 +212,40 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    FutureBuilder<List<Article>>(
-                      future: latestArticles,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        } else if (snapshot.hasError) {
-                          return SizedBox(
-                            height: 250,
-                            child: Center(
-                              child: Text('Error: ${snapshot.error}'),
-                            ),
-                          );
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const SizedBox(
-                            height: 250,
-                            child: Center(child: Text('No articles found')),
-                          );
-                        }
 
-                        final articles = snapshot.data!;
-                        return Column(
-                          children: articles.map((article) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: CardArticleSmall(
-                                title: article.title,
-                                subtitle:
-                                    selectedCategory[0].toUpperCase() +
-                                    selectedCategory.substring(1),
-                                source: article.sourceName,
-                                imageURL: article.imageUrl,
-                                date: article.publishedAt,
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      },
-                    ),
+                    ...top.articles
+                        .skip(1)
+                        .map(
+                          (article) => Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: CardArticleSmall(
+                              title: article.title,
+                              subtitle: 'General',
+                              source: article.sourceName,
+                              imageURL: article.imageUrl,
+                              date: article.publishedAt,
+                            ),
+                          ),
+                        ),
+
+                    if (top.isLoading)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+
+                    // if (top.isError)
+                    //   SizedBox(
+                    //     height: 250,
+                    //     child: Center(
+                    //       child: Text('Error: Failed to fetch articles'),
+                    //     ),
+                    //   ),
+                    if (!top.hasMore)
+                      const SizedBox(
+                        height: 250,
+                        child: Center(child: Text('No articles found')),
+                      ),
                   ],
                 ),
               ),

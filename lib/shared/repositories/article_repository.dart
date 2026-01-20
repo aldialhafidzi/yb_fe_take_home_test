@@ -28,4 +28,22 @@ class ArticleRepository {
 
     return data;
   }
+
+  Future<List<Article>> getTopHeadlines(
+    ArticleQuery query, {
+    required int page,
+    int limit = 11,
+    String category = 'General',
+  }) async {
+    final data = await api.fetchTopHeadlines(
+      query: query,
+      page: page,
+      limit: limit
+    );
+
+    _cache[query] = data;
+    _lastFetch[query] = DateTime.now();
+
+    return data;
+  }
 }

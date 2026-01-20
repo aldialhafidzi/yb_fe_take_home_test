@@ -2,9 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yb_fe_take_home_test/core/theme/app_theme.dart';
-import 'package:yb_fe_take_home_test/shared/models/article.dart';
 import 'package:yb_fe_take_home_test/shared/models/article_query.dart';
-import 'package:yb_fe_take_home_test/shared/provider/expore_articles_provider.dart';
+import 'package:yb_fe_take_home_test/features/explore/provider/expore_articles_provider.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_large.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/card_article_small.dart';
 import 'package:yb_fe_take_home_test/shared/widgets/custom_buttom_app_bar.dart';
@@ -22,23 +21,6 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
 
   Timer? _debounce;
   String _keyword = 'Bali';
-
-  late Future<List<Article>> latestArticles;
-  List<Article> articles = [];
-
-  String selectedCategory = 'general';
-
-  final List<Map<String, String>> categories = [
-    {'title': 'General', 'category': 'general'},
-    {'title': 'World', 'category': 'world'},
-    {'title': 'Nation', 'category': 'nation'},
-    {'title': 'Business', 'category': 'business'},
-    {'title': 'Technology', 'category': 'technology'},
-    {'title': 'Entertainment', 'category': 'entertainment'},
-    {'title': 'Sports', 'category': 'sports'},
-    {'title': 'Science', 'category': 'science'},
-    {'title': 'Health', 'category': 'health'},
-  ];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -171,13 +153,14 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
                               child: Center(child: CircularProgressIndicator()),
                             ),
 
-                          // if (isError)
+                          // if (state.isError)
                           //   SizedBox(
                           //     height: 250,
                           //     child: Center(
                           //       child: Text('Error: Failed to fetch articles'),
                           //     ),
                           //   ),
+                          
                           if (!state.hasMore)
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 16),

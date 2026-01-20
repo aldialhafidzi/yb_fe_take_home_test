@@ -14,7 +14,26 @@ class ArticleApi {
   }) async {
     final res = await dio.get(
       '/search',
-      queryParameters: {...query.toMap(), 'page': page, 'limit': limit},
+      queryParameters: {...query.toMap(), 'page': page, 'max': limit},
+    );
+
+    return (res.data['articles'] as List)
+        .map((e) => Article.fromJson(e))
+        .toList();
+  }
+
+  Future<List<Article>> fetchTopHeadlines({
+    required ArticleQuery query,
+    required int page,
+    required int limit,
+  }) async {
+    final res = await dio.get(
+      '/top-headlines',
+      queryParameters: {
+        ...query.toMap(),
+        'page': page,
+        'max': limit
+      },
     );
 
     return (res.data['articles'] as List)

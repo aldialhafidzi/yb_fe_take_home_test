@@ -13,10 +13,22 @@ final articleRepositoryProvider = Provider<ArticleRepository>((ref) {
   return ArticleRepository(ArticleApi(ref.read(dioProvider)));
 });
 
+final topArticleRepositoryProvider = Provider<ArticleRepository>((ref) {
+  return ArticleRepository(ArticleApi(ref.read(dioProvider)));
+});
+
 final articlesProvider = FutureProvider.family<List<Article>, ArticleQuery>((
   ref,
   query,
 ) async {
   final repo = ref.read(articleRepositoryProvider);
   return repo.getArticles(query, page: query.page, limit: query.limit);
+});
+
+final topArticlesProvider = FutureProvider.family<List<Article>, ArticleQuery>((
+  ref,
+  query,
+) async {
+  final repo = ref.read(topArticleRepositoryProvider);
+  return repo.getTopHeadlines(query, page: query.page, limit: query.limit);
 });
